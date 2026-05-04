@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.15 - SVG flag sprite (flag-icons biblioteka) */
+/* Verzija: 1.16 - dropdown smaller, #2E321F bg, choice min-width */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -119,8 +119,12 @@
 
   #nd-quiz .nd-step-inner {
     width: 100%;
-    max-width: 800px;
+    max-width: 720px;
     margin: 0 auto;
+  }
+  /* Scale step (Q12 - 0 do 10) treba malo više prostora da svih 11 buttona stane u red */
+  #nd-quiz .nd-step[data-key="q12_motivacija"] .nd-step-inner {
+    max-width: 780px;
   }
 
   /* === QUESTION HEADER (iz Typeform: 26px/34px/weight 400) === */
@@ -172,13 +176,14 @@
     flex-direction: column;
     align-items: stretch;
     width: fit-content;
+    min-width: 280px;
     max-width: 100%;
     gap: 8px;
     margin-bottom: 24px;
     margin-left: 32px;
   }
   /* Choice button (spoljni padding 6px 10px):
-     Normal:   bg #363B1E, box-shadow rgba(219,255,0,0.1) 1px
+     Normal:   bg #2E321F, box-shadow rgba(219,255,0,0.1) 1px
      Hover:    bg #363B1B, box-shadow rgba(219,255,0,0.4)
      Selected: bg #222421, box-shadow #DBFF00 2px
   */
@@ -192,7 +197,7 @@
     justify-content: flex-start;
     width: 100%;
     cursor: pointer;
-    background-color: #363B1E;
+    background-color: #2E321F;
     color: var(--nd-answer);
     gap: 8px;
     padding: 6px 10px;
@@ -250,7 +255,7 @@
 
   /* === OPINION SCALE (Q12 — 0 to 10 buttons) ===
      Container 58x56 sa istim bojama kao choice buttons:
-     Normal:   bg #363B1E, box-shadow rgba(219,255,0,0.1) 1px
+     Normal:   bg #2E321F, box-shadow rgba(219,255,0,0.1) 1px
      Hover:    bg #363B1B, box-shadow rgba(219,255,0,0.4) 1px
      Selected: bg #222421, box-shadow #DBFF00 2px
   */
@@ -266,7 +271,7 @@
     box-sizing: border-box;
     width: 58px;
     height: 56px;
-    background-color: #363B1E;
+    background-color: #2E321F;
     color: var(--nd-answer);
     border-radius: 8px;
     box-shadow: rgba(219, 255, 0, 0.1) 0 0 0 1px;
@@ -371,9 +376,9 @@
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    width: 460px;
+    width: 380px;
     max-width: 95vw;
-    max-height: 420px;
+    max-height: 380px;
     background: #232421;
     box-shadow: rgba(219, 255, 0, 0.6) 0 0 0 1px;
     border-radius: 14px;
@@ -381,7 +386,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 16px;
+    /* Padding samo gore i sa strana 0 - items dobijaju svoj horizontalni padding */
+    padding: 12px 0 0 0;
   }
   #nd-quiz .nd-country-dropdown[hidden] {
     display: none;
@@ -390,17 +396,17 @@
   /* Search bar gore u dropdown-u - bez border-bottom-a u originalu */
   #nd-quiz .nd-country-search-wrap {
     position: relative;
-    margin-bottom: 12px;
+    margin: 0 12px 8px 12px;
   }
   #nd-quiz .nd-country-search {
     width: 100%;
     background: transparent;
     border: none;
     color: var(--nd-answer);
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 16px;
+    line-height: 22px;
     font-family: inherit;
-    padding: 8px 32px 8px 0;
+    padding: 6px 28px 6px 0;
     outline: none;
   }
   #nd-quiz .nd-country-search::placeholder {
@@ -411,19 +417,18 @@
     right: 4px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: var(--nd-answer);
     pointer-events: none;
   }
 
   /* Lista zemalja - scrollable, items full-width */
+  /* Padding 4px sa strana da se selected border ne seče */
   #nd-quiz .nd-country-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0;
-    margin-right: -8px; /* pomera scrollbar van padding-a */
-    padding-right: 8px;
+    padding: 4px 8px 4px 12px;
     scrollbar-width: thin;
     scrollbar-color: var(--nd-answer) transparent;
   }
@@ -439,7 +444,7 @@
   }
 
   /* Pojedinačna stavka u listi - ISTI STIL KAO RADIO BUTTON
-     Normal:   bg #363B1E, box-shadow rgba(219,255,0,0.1) 1px
+     Normal:   bg #2E321F, box-shadow rgba(219,255,0,0.1) 1px
      Hover:    bg #363B1B, box-shadow rgba(219,255,0,0.4) 1px
      Selected: bg #222421, box-shadow #DBFF00 2px
   */
@@ -447,16 +452,16 @@
     all: unset;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
     box-sizing: border-box;
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 7px 12px;
+    border-radius: 6px;
     cursor: pointer;
     color: var(--nd-answer);
-    background-color: #363B1E;
+    background-color: #2E321F;
     box-shadow: rgba(219, 255, 0, 0.1) 0 0 0 1px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     transition: background-color 0.25s cubic-bezier(0.215, 0.61, 0.355, 1),
                 box-shadow 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
   }
@@ -468,10 +473,14 @@
     background-color: #222421;
     box-shadow: #DBFF00 0 0 0 2px;
   }
+  /* Poslednja stavka nema margin-bottom (da se ne pojavi prazan razmak ispod) */
+  #nd-quiz .nd-country-item:last-child {
+    margin-bottom: 0;
+  }
   #nd-quiz .nd-country-item-flag {
     flex-shrink: 0;
-    width: 28px;
-    height: 21px;
+    width: 24px;
+    height: 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -480,22 +489,27 @@
   /* flag-icons biblioteka (CSS sprite) - svaka zastavica je background image */
   #nd-quiz .nd-country-item-flag .fi,
   #nd-quiz .nd-flag .fi {
-    width: 28px;
-    height: 21px;
+    width: 24px;
+    height: 18px;
     display: inline-block;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 2px;
   }
+  /* Trigger zastavica može biti malo veća */
+  #nd-quiz .nd-flag .fi {
+    width: 26px;
+    height: 19px;
+  }
   #nd-quiz .nd-country-item-name {
     flex: 1;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 20px;
   }
   #nd-quiz .nd-country-item-dial {
     flex-shrink: 0;
-    font-size: 15px;
+    font-size: 13px;
     color: var(--nd-answer);
   }
   #nd-quiz .nd-country-empty {
