@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.16 */
+/* Verzija: 1.17 */
 
 (function() {
   'use strict';
@@ -933,7 +933,9 @@
               '<div class="nd-phone-row">' +
                 '<button type="button" class="nd-country-trigger" aria-expanded="false" aria-haspopup="listbox">' +
                   '<span class="nd-flag" data-flag></span>' +
-                  '<span class="nd-flag-chevron">⌄</span>' +
+                  '<svg class="nd-flag-chevron" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+                    '<path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+                  '</svg>' +
                 '</button>' +
                 '<input type="tel" class="nd-input nd-phone-input" placeholder="' + escapeHtml(field.placeholder || '') + '" inputmode="tel" autocomplete="tel-national">' +
                 '<div class="nd-country-dropdown" hidden>' +
