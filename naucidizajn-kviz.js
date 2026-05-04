@@ -1,4 +1,4 @@
-/* Verzija: v1.22 */
+/* Verzija: v1.23 */
 
 (function() {
   'use strict';
@@ -1494,7 +1494,7 @@
         instagram: instagram
       },
 
-      answers: getFlatAnswers(),
+      answers: getAnswersWithQuestionLabels(),
 
       utm: utmData,
       page_url: window.location.href,
@@ -1512,6 +1512,43 @@
       } else {
         out[k] = v;
       }
+    });
+    return out;
+  }
+
+  // Mapa: interni key -> celo pitanje (za webhook payload).
+  // Q7 je mid-quiz prekidač, Q12 je skala (broj 0-10), Q16/Q17 su opcionalni kontakt.
+  // Q18 (kontakt) ne ide u 'answers' jer već postoji u 'contact' bloku payload-a.
+  var ND_QUESTION_LABELS = {
+    'q1_zadatak':       'Kad dobiješ novi zadatak na poslu, šta ti je najbitnije?',
+    'q2_vecera':        'Dolaze ti prijatelji na večeru. Kako pristupaš pripremi?',
+    'q3_nervira':       'Šta te najviše nervira kod loših proizvoda ili usluga?',
+    'q4_ucenje':        'Kad učiš nešto novo, kako ti je najlakše?',
+    'q5_stan':          'Kada sređuješ stan bitno ti je:',
+    'q6_zabavno':       'Šta bi ti bilo zabavnije da radiš?',
+    'q7_continue':      'Da li želiš da nastaviš sa kvizom?',
+    'q8_situacija':     'Koja je tvoja trenutna situacija?',
+    'q9_vreme_dnevno':  'Koliko vremena dnevno možeš da posvetiš učenju?',
+    'q10_kada_zarada':  'Kada bi da zarađuješ od IT veštine / dizajna?',
+    'q11_zarada_cilj':  'Koja mesečna zarada bi za tebe bila pobeda?',
+    'q12_motivacija':   'Koliko ti je bitno da promeniš karijeru u narednih 12 meseci?',
+    'q13_budzet':       'Ako postoji program koji može da te dovede do cilja, šta te najbolje opisuje?',
+    'q14_vec_kod_nas':  'Da li si već kod nas na edukaciji?',
+    'q15_60_dana':      'Da li želiš da kreneš sa edukacijom u narednih 60 dana?',
+    'q16_instagram':    'Unesi svoj Instagram username',
+    'q17_phone':        'Unesi svoj broj telefona',
+    'q17_phone_country':'Zemlja telefona (ISO kod)'
+  };
+
+  // Vraća answers objekat sa celim pitanjima kao ključevima (za webhook).
+  // Preskaće Q18 (kontakt) jer već postoji u 'contact' bloku payload-a.
+  function getAnswersWithQuestionLabels() {
+    var flat = getFlatAnswers();
+    var out = {};
+    Object.keys(flat).forEach(function(internalKey) {
+      if (internalKey === 'q18_kontakt') return; // skip — već u 'contact'
+      var label = ND_QUESTION_LABELS[internalKey] || internalKey;
+      out[label] = flat[internalKey];
     });
     return out;
   }
