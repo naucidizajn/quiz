@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.19 */
+/* Verzija: 1.20 */
 
 (function() {
   'use strict';
@@ -358,7 +358,7 @@
         choices: [
           { label: 'Da imam slobodu da ga uradim na svoj način', score: 'logo-design' },
           { label: 'Da razumem zašto se to radi i kako utiče na druge', score: 'ui-ux' },
-          { label: 'Da mogu da ga upakujem tako da izgleda i âprodajeâ se dobro', score: 'web-design' },
+          { label: 'Da mogu da ga upakujem tako da izgleda i „prodaje“ se dobro', score: 'web-design' },
           { label: 'Da dobijem tačna uputstva šta treba da se uradi', score: 'webflow' }
         ]
       },
@@ -469,10 +469,10 @@
         title: 'Koja mesečna zarada bi za tebe bila pobeda?',
         required: true,
         choices: [
-          { label: '1.000â2.000â¬' },
-          { label: '2.000â3.000â¬' },
-          { label: '3.000â5.000â¬' },
-          { label: '5.000+â¬' }
+          { label: '1.000–2.000€' },
+          { label: '2.000–3.000€' },
+          { label: '3.000–5.000€' },
+          { label: '5.000+€' }
         ]
       },
       {
@@ -486,7 +486,7 @@
         title: 'Ako postoji program koji može da te dovede do cilja, šta te najbolje opisuje?',
         required: true,
         choices: [
-          { label: 'Imam pristup 1.500-2.000â¬ za najbolju edukaciju' },
+          { label: 'Imam pristup 1.500-2.000€ za najbolju edukaciju' },
           { label: 'Nemam ušteđevinu ali bih mogao/la da platim na mesečne rate' },
           { label: 'Mogu da investiram ali manji iznos' },
           { label: 'Ne mogu da investiram ništa u svoje znanje trenutno' }
