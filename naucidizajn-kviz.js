@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.15 - flag-icons biblioteka */
+/* Verzija: 1.16 */
 
 (function() {
   'use strict';
