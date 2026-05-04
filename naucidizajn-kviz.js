@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.9 (final) — sa env detection (test vs prod) */
+/* Verzija: 1.10 - Q18 + two-step submit */
 
 (function() {
   'use strict';
@@ -577,16 +577,20 @@
     else if (field.type === 'contact') {
       inner = renderQuestionHeader(field) +
               '<div class="nd-contact-grid">' +
-                '<div>' +
-                  '<label class="nd-input-label">Ime i prezime *</label>' +
-                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-name autocomplete="name"></div>' +
+                '<div class="nd-contact-field">' +
+                  '<label class="nd-input-label">First name<span class="nd-required">*</span></label>' +
+                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-firstname autocomplete="given-name" placeholder="Jane"></div>' +
                 '</div>' +
-                '<div>' +
-                  '<label class="nd-input-label">Email *</label>' +
-                  '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email"></div>' +
+                '<div class="nd-contact-field">' +
+                  '<label class="nd-input-label">Last name<span class="nd-required">*</span></label>' +
+                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-lastname autocomplete="family-name" placeholder="Smith"></div>' +
+                '</div>' +
+                '<div class="nd-contact-field">' +
+                  '<label class="nd-input-label">Email<span class="nd-required">*</span></label>' +
+                  '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email" placeholder="name@example.com"></div>' +
                 '</div>' +
               '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">POŠALJI</span></button></div>' +
+              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>' +
               '<div class="nd-error" hidden></div>';
     }
 
@@ -732,25 +736,52 @@
       });
     }
     else if (field.type === 'contact') {
-      var nameIn  = el.querySelector('input[data-name]');
+      var firstIn = el.querySelector('input[data-firstname]');
+      var lastIn  = el.querySelector('input[data-lastname]');
       var emailIn = el.querySelector('input[data-email]');
       var ok2     = el.querySelector('.nd-btn-primary');
+      var ok2Lbl  = ok2.querySelector('.nd-btn-label');
       var errEl   = el.querySelector('.nd-error');
 
+      // Two-step submit state: 'ok' → first click confirms, 'submit' → second click sends
+      var submitStage = 'ok';
+
       function valid() {
-        var n = (nameIn.value || '').trim();
+        var fn = (firstIn.value || '').trim();
+        var ln = (lastIn.value || '').trim();
         var em = (emailIn.value || '').trim();
         var emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
-        return n.length >= 2 && emOk;
+        return fn.length >= 1 && ln.length >= 1 && emOk;
       }
-      function refresh() { ok2.disabled = !valid(); }
-      nameIn.addEventListener('input', refresh);
+      function refresh() {
+        ok2.disabled = !valid();
+        // Ako korisnik menja polja nakon prvog klika OK → resetuj na "OK"
+        if (submitStage === 'submit') {
+          submitStage = 'ok';
+          ok2Lbl.textContent = 'OK';
+        }
+      }
+      firstIn.addEventListener('input', refresh);
+      lastIn.addEventListener('input', refresh);
       emailIn.addEventListener('input', refresh);
 
       ok2.addEventListener('click', function() {
         if (!valid()) return;
+
+        if (submitStage === 'ok') {
+          // Prvi klik: pretvori OK u Submit
+          submitStage = 'submit';
+          ok2Lbl.textContent = 'Submit';
+          // Fokus na button da Enter pokrene drugi klik
+          ok2.focus();
+          return;
+        }
+
+        // Drugi klik (submit): šalji formu
         state.answers[field.key] = {
-          name: nameIn.value.trim(),
+          firstName: firstIn.value.trim(),
+          lastName: lastIn.value.trim(),
+          name: firstIn.value.trim() + ' ' + lastIn.value.trim(),
           email: emailIn.value.trim()
         };
         ok2.disabled = true;
@@ -764,6 +795,17 @@
       });
       emailIn.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && valid()) { e.preventDefault(); ok2.click(); }
+      });
+      // Ctrl+Enter on any field = submit (Typeform-style)
+      [firstIn, lastIn, emailIn].forEach(function(input) {
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && valid()) {
+            e.preventDefault();
+            // Force to submit stage and click
+            if (submitStage === 'ok') { submitStage = 'submit'; ok2Lbl.textContent = 'Submit'; }
+            ok2.click();
+          }
+        });
       });
     }
   }
@@ -933,6 +975,8 @@
       visited_count: state.visitedKeys.length,
 
       contact: {
+        first_name: contact.firstName || '',
+        last_name: contact.lastName || '',
         name: contact.name || '',
         email: contact.email || '',
         phone: phone,
