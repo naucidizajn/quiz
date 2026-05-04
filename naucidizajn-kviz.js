@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.10 - Q18 + two-step submit */
+/* Verzija: 1.11 */
 
 (function() {
   'use strict';
@@ -227,16 +227,16 @@
       {
         key: 'q16_instagram', num: 16, type: 'text',
         title: 'Unesi svoj Instagram username (nije obavezno)',
-        description: 'Ako odlučiš da uneseš svoj Instagram, naš tim će ti poslati poruku da vidim možemo li ti pomoći oko karijere.',
+        description: 'Ako odlučiš da uneseš svoj Instagram, naš tim će ti poslati poruku da vidimo da li dizajn karijera ima smisla za tebe i kako mi možemo da ti pomognemo da kreneš sa novom veštinom. 😊\nSvakako, ovo <strong>nije obavezno</strong> i možeš samo da nastaviš i dobiješ rezultat ☝️',
         required: false,
-        placeholder: '@username'
+        placeholder: 'Type your answer here...'
       },
 
       // ---- Q17 Telefon (uslovno) ----
       {
         key: 'q17_phone', num: 17, type: 'phone',
         title: 'Unesi svoj broj telefona (nije obavezno)',
-        description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da pronađeš najbolji put za sebe.',
+        description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da odlučiš da li je dizajn karijera za tebe i koji smer ima smisla.',
         required: false,
         placeholder: '6X XXX XXXX'
       },
@@ -245,7 +245,7 @@
       {
         key: 'q18_kontakt', num: 18, type: 'contact',
         title: 'Podaci',
-        description: 'Na email će ti stići rezultat kviza, kao i dodatne lekcije koje će ti pomoći da kreneš.',
+        description: 'Na email će ti stići rezultat kviza, kao i dodatne lekcije koje će ti pomoći da kreneš sa učenjem idealne veštine za tebe',
         required: true
       }
     ]
@@ -483,9 +483,9 @@
     // Q14: već je na edukaciji -> pravo na Q18
     if (currentKey === 'q14_vec_kod_nas' && a.q14_vec_kod_nas && a.q14_vec_kod_nas.skipToEnd) return 'q18_kontakt';
 
-    // Q15: smart routing
+    // Q15: smart routing - HOT lead -> Q17 (telefon), COLD -> Q16 (Instagram)
     if (currentKey === 'q15_60_dana') {
-      return isHotLeadAfterQ15(a) ? 'q17_phone' : 'q16_instagram';
+      return isHotLeadAfterQ15(getFlatAnswersForRouting()) ? 'q17_phone' : 'q16_instagram';
     }
 
     // Q16 (Instagram) -> Q18 direktno (preskoči Q17)
@@ -523,10 +523,83 @@
     return '<h2 class="nd-q-title">' + html + req + '</h2>';
   }
 
+  // Vraća redni broj koji treba da se prikaže za polje (na osnovu trenutne putanje).
+  // Numeracija se računa dinamički — ne koristi se hardkodirano field.num.
+  // Razlog: korisnik može da preskoči pitanja, pa trenutni step može biti npr. 8. iako u JSON-u ima broj 18.
+  function getDisplayNumber(field) {
+    var path = getPredictedPath();
+    var idx = path.indexOf(field.key);
+    if (idx === -1) return field.num; // fallback ako nije u trenutnoj putanji
+    return idx + 1;
+  }
+
+  // Vraća listu key-eva u redosledu kojim će biti prikazani u trenutnoj putanji
+  function getPredictedPath() {
+    var a = state.answers;
+    var path = ['q1_zadatak', 'q2_vecera', 'q3_nervira', 'q4_ucenje', 'q5_stan', 'q6_zabavno', 'q7_continue'];
+
+    if (a.q7_continue && a.q7_continue.skipToEnd) {
+      path.push('q18_kontakt');
+      return path;
+    }
+    // Q7 'DA' ili neodgovoreno → idemo dalje pretpostavkom DA
+    path = path.concat(['q8_situacija','q9_vreme_dnevno','q10_kada_zarada','q11_zarada_cilj','q12_motivacija','q13_budzet','q14_vec_kod_nas']);
+
+    if (a.q14_vec_kod_nas && a.q14_vec_kod_nas.skipToEnd) {
+      path.push('q18_kontakt');
+      return path;
+    }
+    // Q14 'Nisam' ili neodgovoreno → idemo dalje pretpostavkom Nisam
+    path.push('q15_60_dana');
+
+    // Posle Q15: HOT → telefon, COLD → Instagram (ako je Q15 odgovoren)
+    var hotKnown = a.q15_60_dana != null;
+    if (hotKnown) {
+      path.push(isHotLeadAfterQ15(getFlatAnswersForRouting()) ? 'q17_phone' : 'q16_instagram');
+    } else {
+      // Pretpostavi Instagram (default - cold) za predikciju brojeva pre Q15 odgovora
+      path.push('q16_instagram');
+    }
+
+    path.push('q18_kontakt');
+    return path;
+  }
+
+  // Helper: vraća flat answers koje su dostupne (bez label/value wrapping-a) za routing
+  function getFlatAnswersForRouting() {
+    var out = {};
+    Object.keys(state.answers).forEach(function(k) {
+      var v = state.answers[k];
+      if (v && typeof v === 'object' && 'label' in v) out[k] = v.label;
+      else out[k] = v;
+    });
+    return out;
+  }
+
   function renderQuestionHeader(field) {
-    var num = '<span class="nd-q-num" aria-hidden="true">' + field.num + '</span>';
-    var desc = field.description ? '<p class="nd-q-desc">' + escapeHtml(field.description) + '</p>' : '';
+    var displayNum = getDisplayNumber(field);
+    var num = '<span class="nd-q-num" aria-hidden="true" data-fieldkey="' + field.key + '">' + displayNum + '</span>';
+    // Description može sadržati HTML markup (kontrolišemo izvor, ne korisnik unosi)
+    // \n se konvertuje u <br> za line break
+    var desc = '';
+    if (field.description) {
+      var descHtml = field.description.replace(/\n/g, '<br>');
+      desc = '<p class="nd-q-desc">' + descHtml + '</p>';
+    }
     return '<div class="nd-q-row">' + num + renderTitle(field) + '</div>' + desc;
+  }
+
+  // Update brojevi na svim step-ovima (poziva se nakon svakog odgovora)
+  function updateAllStepNumbers() {
+    Object.keys(stepEls).forEach(function(key) {
+      var el = stepEls[key];
+      if (!el) return;
+      var numEl = el.querySelector('.nd-q-num[data-fieldkey="' + key + '"]');
+      if (!numEl) return;
+      var field = FORM.fields.find(function(f) { return f.key === key; });
+      if (!field) return;
+      numEl.textContent = getDisplayNumber(field);
+    });
   }
 
   function letterFor(i) { return String.fromCharCode(65 + i); /* A,B,C,D */ }
@@ -699,11 +772,18 @@
           b.classList.add('nd-selected');
           sval = parseInt(b.dataset.val, 10);
           sok.removeAttribute('disabled');
+          // Auto-advance posle 280ms (kao u choice buttons)
+          setTimeout(function() {
+            if (state.answers[field.key] != null) return; // već je submited
+            state.answers[field.key] = sval;
+            advance(field.key);
+          }, 280);
         });
       });
 
       sok.addEventListener('click', function() {
         if (sval == null) return;
+        if (state.answers[field.key] != null) return;
         state.answers[field.key] = sval;
         advance(field.key);
       });
@@ -826,6 +906,8 @@
   }
 
   function advance(currentKey) {
+    // Update brojevi na svim step-ovima jer se putanja možda promenila
+    updateAllStepNumbers();
     var nextKey = getNextKey(currentKey);
     if (nextKey === 'END') {
       // ovo se dešava samo nakon Q18
