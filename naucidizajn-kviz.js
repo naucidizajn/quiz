@@ -8,7 +8,7 @@
   // KONFIGURACIJA — promeni pre deploy-a
   // ====================================================================
   var ND_CONFIG = {
-    webhookUrl: 'https://hook.eu2.make.com/REPLACE_WITH_YOUR_WEBHOOK',
+    webhookUrl: 'https://hook.eu2.make.com/56oflcq2abftwtm523pefqcwonjj3jsv',
     formId: 'naucidizajn-1minut-kviz',
     fbPixelId: '415729519579969',
     redirectAfterSubmit: true,
