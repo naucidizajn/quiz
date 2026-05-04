@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.9.1 - layout fix za index.html */
+/* Verzija: 1.10 - Q18 layout (3 fields vertical) + Submit two-step */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -326,16 +326,18 @@
     border-bottom: 2px solid rgba(219, 255, 0, 0.4);
   }
 
-  /* Contact info group (Q18 - email/name) */
+  /* Contact info group (Q18 - First name / Last name / Email - vertikalno) */
   #nd-quiz .nd-contact-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 18px;
     margin-bottom: 24px;
     margin-left: 32px;
   }
-  @media (min-width: 640px) {
-    #nd-quiz .nd-contact-grid { grid-template-columns: 1fr 1fr; }
+  #nd-quiz .nd-contact-field { display: block; }
+  #nd-quiz .nd-required {
+    color: #DBFF00;
+    margin-left: 2px;
   }
 
   /* === SUBMIT / OK BUTTON ===
