@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.17 */
+/* Verzija: 1.18 */
 
 (function() {
   'use strict';
@@ -353,80 +353,80 @@
       // ---- Q1-Q6 Quiz pitanja (boduju outcome) ----
       {
         key: 'q1_zadatak', num: 1, type: 'choice',
-        title: 'Kad dobiješ novi zadatak na poslu, šta ti je najbitnije?',
+        title: 'Kad dobijeÅ¡ novi zadatak na poslu, Å¡ta ti je najbitnije?',
         required: true,
         choices: [
-          { label: 'Da imam slobodu da ga uradim na svoj način', score: 'logo-design' },
-          { label: 'Da razumem zašto se to radi i kako utiče na druge', score: 'ui-ux' },
-          { label: 'Da mogu da ga upakujem tako da izgleda i "prodaje" se dobro', score: 'web-design' },
-          { label: 'Da dobijem tačna uputstva šta treba da se uradi', score: 'webflow' }
+          { label: 'Da imam slobodu da ga uradim na svoj naÄin', score: 'logo-design' },
+          { label: 'Da razumem zaÅ¡to se to radi i kako utiÄe na druge', score: 'ui-ux' },
+          { label: 'Da mogu da ga upakujem tako da izgleda i âprodajeâ se dobro', score: 'web-design' },
+          { label: 'Da dobijem taÄna uputstva Å¡ta treba da se uradi', score: 'webflow' }
         ]
       },
       {
         key: 'q2_vecera', num: 2, type: 'choice',
-        title: 'Dolaze ti prijatelji na večeru. Kako pristupaš pripremi?',
+        title: 'Dolaze ti prijatelji na veÄeru. Kako pristupaÅ¡ pripremi?',
         required: true,
         choices: [
-          { label: 'Spremiću nešto što znam da nikada nisu probali. Volim da ih iznenadim novim ukusima.', score: 'logo-design' },
-          { label: 'Razmišljam kome bi se šta svidelo i pravim po tome.', score: 'ui-ux' },
+          { label: 'SpremiÄu neÅ¡to Å¡to znam da nikada nisu probali. Volim da improvizujem.', score: 'logo-design' },
+          { label: 'RazmiÅ¡ljam kome bi se Å¡ta svidelo i pravim po tome.', score: 'ui-ux' },
           { label: 'Bitno mi je da izgleda lepo i da ostavi utisak', score: 'web-design' },
-          { label: 'Pitam njih šta hoće da jedu i spremim to. Ne volim da spremam ono što ne vole.', score: 'webflow' }
+          { label: 'Pitam njih Å¡ta hoÄe da jedu i spremim to. Ne volim da spremam napamet.', score: 'webflow' }
         ]
       },
       {
         key: 'q3_nervira', num: 3, type: 'choice',
-        title: 'Šta te najviše nervira kod loših proizvoda ili usluga?',
+        title: 'Å ta te najviÅ¡e nervira kod loÅ¡ih proizvoda ili usluga?',
         required: true,
         choices: [
-          { label: 'Kad izgledaju ružno', score: 'logo-design' },
-          { label: 'Kad ne znam odmah šta treba da uradim ili gde da kliknem', score: 'ui-ux' },
-          { label: 'Kad deluju dosadno, generički ili "bez duše"', score: 'web-design' },
-          { label: 'Kad nešto ne radi kako treba', score: 'webflow' }
+          { label: 'Kad izgledaju ruÅ¾no', score: 'logo-design' },
+          { label: 'Kad ne znam odmah Å¡ta treba da uradim ili gde da kliknem', score: 'ui-ux' },
+          { label: 'Kad deluju dosadno, generiÄki ili âbez duÅ¡eâ', score: 'web-design' },
+          { label: 'Kad neÅ¡to ne radi kako treba', score: 'webflow' }
         ]
       },
       {
         key: 'q4_ucenje', num: 4, type: 'choice',
-        title: 'Kad učiš nešto novo, kako ti je najlakše?',
+        title: 'Kad uÄiÅ¡ neÅ¡to novo, kako ti je najlakÅ¡e?',
         required: true,
         choices: [
           { label: 'Kroz slike, primere i inspiraciju', score: 'logo-design' },
-          { label: 'Kroz objašnjenje "zašto" i "kako ljudi razmišljaju"', score: 'ui-ux' },
+          { label: 'Kroz objaÅ¡njenje âzaÅ¡toâ i âkako ljudi razmiÅ¡ljaju"', score: 'ui-ux' },
           { label: 'Kroz konkretne primere iz prakse i realne projekte', score: 'web-design' },
-          { label: 'Korak po korak, jasno, bez viška priče', score: 'webflow' }
+          { label: 'Korak po korak, jasno, bez viÅ¡ka priÄe', score: 'webflow' }
         ]
       },
       {
         key: 'q5_stan', num: 5, type: 'choice',
-        title: 'Kada sređuješ stan bitno ti je:',
+        title: 'Kada sreÄujeÅ¡ stan bitno ti je:',
         required: true,
         choices: [
-          { label: 'Najbitnije mi je da je stan estetičan i unikatan', score: 'logo-design' },
-          { label: 'Volim da mi je stan praktičan i da je sve na svom logičnom mestu', score: 'ui-ux' },
-          { label: 'Važno mi je da stan bude funkcionalan ali mi je još važnije da je estetski lep', score: 'web-design' },
-          { label: 'Nije mi presudno kako izgleda, bitno mi je da sve radi kako treba', score: 'webflow' }
+          { label: 'Najbitnije mi je da je stan estetiÄan i unikatan', score: 'logo-design' },
+          { label: 'Volim da mi je stan praktiÄan i da je sve na svom logiÄnom mestu. Recimo, staviÄu punjaÄ u svaku sobu da bih mogao lako da punim telefon gde god da sam.', score: 'ui-ux' },
+          { label: 'VaÅ¾no mi je da stan bude funkcionalan ali mi je joÅ¡ vaÅ¾nije da Äim uÄeÅ¡ u stan znaÅ¡ da je moj. Ceo vajb stana prati moju energiju.', score: 'web-design' },
+          { label: 'Nije mi presudno kako izgleda, bitno mi je da sve radi kako treba i da nemam problema u svakodnevnom koriÅ¡Äenju.', score: 'webflow' }
         ]
       },
       {
         key: 'q6_zabavno', num: 6, type: 'choice',
-        title: 'Šta bi ti bilo zabavnije da radiš?',
+        title: 'Å ta bi ti bilo zabavnije da radiÅ¡?',
         required: true,
         choices: [
-          { label: 'Dođe ti klijent sa svojim biznisom, recimo otvorio je kafić, i traži ti da mu dizajniraš logo i celokupan brending.', score: 'logo-design' },
-          { label: 'Klijent dođe sa idejom za aplikaciju. Ti treba da uklopiš sve elemente tako da aplikacija bude jednostavna za korišćenje.', score: 'ui-ux' },
-          { label: 'Dizajniraš sajtove gde ćeš ti svojim dizajnom podizati prodaju proizvoda i usluga klijenata.', score: 'web-design' },
-          { label: 'Dobiješ gotov dizajn od dizajnera, a tvoj posao je da ga kao programer kodiraš i staviš na sajt.', score: 'webflow' }
+          { label: 'DoÄe ti klijent sa svojim biznisom, recimo otvorio je kafiÄ. Ti treba da im smisliÅ¡ logo, boje i ceo taj vizuelni deo.', score: 'logo-design' },
+          { label: 'Klijent doÄe sa idejom za aplikaciju. Ti treba da uklopiÅ¡ dizajn i ljudsku psihologiju i napraviÅ¡ aplikaciju koja je laka i logiÄna za koriÅ¡Äenje.', score: 'ui-ux' },
+          { label: 'DizajniraÅ¡ sajtove gde ÄeÅ¡ ti svojim dizajnom podizati prodaju tvom klijentu. Tvoj posao je da taj sajt ispriÄa priÄu o tom proizvodu i da to uradi na zanimljiv naÄin.', score: 'web-design' },
+          { label: 'DobijeÅ¡ gotov dizajn od dizajnera, a tvoj posao je da ga kao lego kockice sloÅ¾iÅ¡ da bude pravi sajt koji moÅ¾eÅ¡ da otvoriÅ¡ i na kompjuteru i na telefonu.', score: 'webflow' }
         ]
       },
 
       // ---- Q7 Mid-quiz prekidač ----
       {
         key: 'q7_continue', num: 7, type: 'choice',
-        title: '*Sjajno!* Na osnovu tvojih odgovora već znamo koja IT veština ti najviše leži.',
-        description: 'Pre nego što ti je otkrijemo, imamo još par brzih pitanja da vidimo da li ti možemo dati i konkretan plan kako da je naučiš. Da li želiš?',
+        title: '*Sjajno! Na osnovu tvojih odgovora veÄ znamo koja IT veÅ¡tina ti najviÅ¡e leÅ¾i.*',
+        description: 'Pre nego Å¡to ti je otkrijemo, imamo joÅ¡ par brzih pitanja da vidimo da li ti moÅ¾emo zaista pomoÄi da kreneÅ¡ sa ovom veÅ¡tinom. TrebaÄe oko 1 minut. MoÅ¾e?',
         required: true,
         choices: [
           { label: 'DA, idemo dalje', value: 'da_dalje' },
-          { label: 'NE, pokaži mi rezultat odmah', value: 'ne_rezultat', skipToEnd: true }
+          { label: 'NE, pokaÅ¾i mi rezultat odmah', value: 'ne_rezultat', skipToEnd: true }
         ]
       },
 
@@ -444,7 +444,7 @@
       },
       {
         key: 'q9_vreme_dnevno', num: 9, type: 'choice',
-        title: 'Koliko vremena dnevno imaš za učenje nove veštine?',
+        title: 'Koliko vremena dnevno imaÅ¡ za uÄenje nove veÅ¡tine?',
         required: true,
         choices: [
           { label: 'Manje od 1h' },
@@ -455,46 +455,46 @@
       },
       {
         key: 'q10_kada_zarada', num: 10, type: 'choice',
-        title: 'Kada bi da zarađuješ od IT veštine / dizajna?',
+        title: 'Kada bi da zaraÄujeÅ¡ od IT veÅ¡tine / dizajna?',
         required: true,
         choices: [
           { label: 'Za manje od 6 meseci' },
           { label: '6-12 meseci' },
           { label: '12-24 meseca' },
-          { label: 'Jednog dana, sada samo istražujem.' }
+          { label: 'Jednog dana, sada samo istraÅ¾ujem.' }
         ]
       },
       {
         key: 'q11_zarada_cilj', num: 11, type: 'choice',
-        title: 'Koja mesečna zarada bi za tebe bila pobeda?',
+        title: 'Koja meseÄna zarada bi za tebe bila pobeda?',
         required: true,
         choices: [
-          { label: '1.000–2.000€' },
-          { label: '2.000–3.000€' },
-          { label: '3.000–5.000€' },
-          { label: '5.000+€' }
+          { label: '1.000â2.000â¬' },
+          { label: '2.000â3.000â¬' },
+          { label: '3.000â5.000â¬' },
+          { label: '5.000+â¬' }
         ]
       },
       {
         key: 'q12_motivacija', num: 12, type: 'scale',
-        title: 'Koliko ti je bitno da promeniš karijeru u narednih 12 meseci?',
+        title: 'Koliko ti je bitno da promeniÅ¡ karijeru u narednih 12 meseci?',
         required: true,
         scale: { min: 0, max: 10 }
       },
       {
         key: 'q13_budzet', num: 13, type: 'choice',
-        title: 'Ako postoji program koji može da te dovede do cilja, šta te najbolje opisuje?',
+        title: 'Ako postoji program koji moÅ¾e da te dovede do cilja, Å¡ta te najbolje opisuje?',
         required: true,
         choices: [
-          { label: 'Imam pristup 1.500-2.000€ za najbolju edukaciju' },
-          { label: 'Nemam ušteđevinu ali bih mogao/la da platim na mesečne rate' },
+          { label: 'Imam pristup 1.500-2.000â¬ za najbolju edukaciju' },
+          { label: 'Nemam uÅ¡teÄevinu ali bih mogao/la da platim na meseÄne rate' },
           { label: 'Mogu da investiram ali manji iznos' },
-          { label: 'Ne mogu da investiram ništa u svoje znanje trenutno' }
+          { label: 'Ne mogu da investiram niÅ¡ta u svoje znanje trenutno' }
         ]
       },
       {
         key: 'q14_vec_kod_nas', num: 14, type: 'choice',
-        title: 'Da li si već kod nas na edukaciji?',
+        title: 'Da li si veÄ kod nas na edukaciji?',
         required: true,
         choices: [
           { label: 'Da, jesam', skipToEnd: true },
@@ -503,12 +503,12 @@
       },
       {
         key: 'q15_60_dana', num: 15, type: 'choice',
-        title: 'Da li želiš da kreneš sa edukacijom u narednih 60 dana?',
+        title: 'Da li Å¾eliÅ¡ da kreneÅ¡ sa edukacijom u narednih 60 dana?',
         required: true,
         choices: [
-          { label: 'Da, želim da krenem u narednih 60 dana' },
+          { label: 'Da, Å¾elim da krenem u narednih 60 dana' },
           { label: 'Nisam siguran/na' },
-          { label: 'Ne, samo istražujem' }
+          { label: 'Ne, samo istraÅ¾ujem' }
         ]
       },
 
@@ -516,7 +516,7 @@
       {
         key: 'q16_instagram', num: 16, type: 'text',
         title: 'Unesi svoj Instagram username (nije obavezno)',
-        description: 'Ako odlučiš da uneseš svoj Instagram, naš tim će ti poslati poruku da vidimo da li dizajn karijera ima smisla za tebe i kako mi možemo da ti pomognemo da kreneš sa novom veštinom. 😊\nSvakako, ovo <strong>nije obavezno</strong> i možeš samo da nastaviš i dobiješ rezultat ☝️',
+        description: 'Ako odluÄiÅ¡ da uneseÅ¡ svoj Instagram, naÅ¡ tim Äe ti poslati poruku da vidimo da li dizajn karijera ima smisla za tebe i kako mi moÅ¾emo da ti pomognemo da kreneÅ¡ sa novom veÅ¡tinom. âºï¸\nSvakako, ovo *nije obavezno* i moÅ¾eÅ¡ samo da nastaviÅ¡ i dobijeÅ¡ rezultat âð»',
         required: false,
         placeholder: 'Type your answer here...'
       },
@@ -525,7 +525,7 @@
       {
         key: 'q17_phone', num: 17, type: 'phone',
         title: 'Unesi svoj broj telefona (nije obavezno)',
-        description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da odlučiš da li je dizajn karijera za tebe i koji smer ima smisla.',
+        description: 'Ako ostaviÅ¡ broj, naÅ¡ tim Äe ti pisati na WhatsApp / Viber da ti pomognemo da odluÄiÅ¡ da li je dizajn karijera za tebe i koji smer ima smisla. ',
         required: false,
         placeholder: '060 1234567'
       },
@@ -534,7 +534,7 @@
       {
         key: 'q18_kontakt', num: 18, type: 'contact',
         title: 'Podaci',
-        description: 'Na email će ti stići rezultat kviza, kao i dodatne lekcije koje će ti pomoći da kreneš sa učenjem idealne veštine za tebe',
+        description: 'Na email Äe ti stiÄi rezultat kviza, kao i dodatne lekcije koje Äe ti pomoÄi da kreneÅ¡ sa uÄenjem idealne veÅ¡tine za tebe',
         required: true
       }
     ]
