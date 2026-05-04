@@ -1,5 +1,4 @@
-/* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.20 */
+/* Verzija: v1.21 */
 
 (function() {
   'use strict';
@@ -696,11 +695,16 @@
     var q13 = a.q13_budzet;
     var q15 = a.q15_60_dana;
 
+    // 1:1 sa Typeform JSON-om (sve unique OR grane konsolidovane)
+    // A: Q10 = manje od 6m  (sam po sebi)
     if (q10 === 'Za manje od 6 meseci') return true;
+    // B: Q13 = mesečne rate  (sam po sebi — Typeform branch 3, BEZ Q15 uslova)
+    if (q13 === 'Nemam ušteđevinu ali bih mogao/la da platim na mesečne rate') return true;
+    // C: Q10 = 6-12m + Q13 = 1500-2000€  (Typeform branch 4 — bez Q12 uslova)
     if (q10 === '6-12 meseci' && q13 === 'Imam pristup 1.500-2.000€ za najbolju edukaciju') return true;
+    // D: Q10 = 6-12m + Q12>=8 + Q13 = manji iznos + Q15 = Da 60d
     if (q10 === '6-12 meseci' && q12 >= 8 && q13 === 'Mogu da investiram ali manji iznos' && q15 === 'Da, želim da krenem u narednih 60 dana') return true;
-    if (q13 === 'Nemam ušteđevinu ali bih mogao/la da platim na mesečne rate' &&
-        (q15 === 'Da, želim da krenem u narednih 60 dana' || q15 === 'Nisam siguran/na')) return true;
+    // E: Q10 = 12-24m + Q12>=8 + Q13 = 1500-2000€
     if (q10 === '12-24 meseca' && q12 >= 8 && q13 === 'Imam pristup 1.500-2.000€ za najbolju edukaciju') return true;
     return false;
   }
