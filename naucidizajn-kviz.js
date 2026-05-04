@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.11 */
+/* Verzija: 1.13 - 225 zemalja, IP geolocation, custom dropdown */
 
 (function() {
   'use strict';
@@ -35,6 +35,293 @@
     console.log('  • Facebook Pixel: DISABLED');
     console.log('  • Webhook to Make: DISABLED (samo console.log payload-a)');
     console.log('  • Sve ostalo radi normalno');
+  }
+
+  // ====================================================================
+  // LISTA ZEMALJA (225 zemalja - za country picker na Q17 telefon)
+  // ====================================================================
+  var ND_COUNTRIES = [
+      {c:'AF',n:'Afghanistan',d:'+93'},
+      {c:'AL',n:'Albania',d:'+355'},
+      {c:'DZ',n:'Algeria',d:'+213'},
+      {c:'AS',n:'American Samoa',d:'+1684'},
+      {c:'AD',n:'Andorra',d:'+376'},
+      {c:'AO',n:'Angola',d:'+244'},
+      {c:'AI',n:'Anguilla',d:'+1264'},
+      {c:'AG',n:'Antigua and Barbuda',d:'+1268'},
+      {c:'AR',n:'Argentina',d:'+54'},
+      {c:'AM',n:'Armenia',d:'+374'},
+      {c:'AW',n:'Aruba',d:'+297'},
+      {c:'AU',n:'Australia',d:'+61'},
+      {c:'AT',n:'Austria',d:'+43'},
+      {c:'AZ',n:'Azerbaijan',d:'+994'},
+      {c:'BS',n:'Bahamas',d:'+1242'},
+      {c:'BH',n:'Bahrain',d:'+973'},
+      {c:'BD',n:'Bangladesh',d:'+880'},
+      {c:'BB',n:'Barbados',d:'+1246'},
+      {c:'BY',n:'Belarus',d:'+375'},
+      {c:'BE',n:'Belgium',d:'+32'},
+      {c:'BZ',n:'Belize',d:'+501'},
+      {c:'BJ',n:'Benin',d:'+229'},
+      {c:'BM',n:'Bermuda',d:'+1441'},
+      {c:'BT',n:'Bhutan',d:'+975'},
+      {c:'BO',n:'Bolivia',d:'+591'},
+      {c:'BA',n:'Bosnia and Herzegovina',d:'+387'},
+      {c:'BW',n:'Botswana',d:'+267'},
+      {c:'BR',n:'Brazil',d:'+55'},
+      {c:'BN',n:'Brunei',d:'+673'},
+      {c:'BG',n:'Bulgaria',d:'+359'},
+      {c:'BF',n:'Burkina Faso',d:'+226'},
+      {c:'BI',n:'Burundi',d:'+257'},
+      {c:'KH',n:'Cambodia',d:'+855'},
+      {c:'CM',n:'Cameroon',d:'+237'},
+      {c:'CA',n:'Canada',d:'+1'},
+      {c:'CV',n:'Cape Verde',d:'+238'},
+      {c:'KY',n:'Cayman Islands',d:'+1345'},
+      {c:'CF',n:'Central African Republic',d:'+236'},
+      {c:'TD',n:'Chad',d:'+235'},
+      {c:'CL',n:'Chile',d:'+56'},
+      {c:'CN',n:'China',d:'+86'},
+      {c:'CO',n:'Colombia',d:'+57'},
+      {c:'KM',n:'Comoros',d:'+269'},
+      {c:'CG',n:'Congo',d:'+242'},
+      {c:'CD',n:'Congo (DRC)',d:'+243'},
+      {c:'CK',n:'Cook Islands',d:'+682'},
+      {c:'CR',n:'Costa Rica',d:'+506'},
+      {c:'HR',n:'Croatia',d:'+385'},
+      {c:'CU',n:'Cuba',d:'+53'},
+      {c:'CY',n:'Cyprus',d:'+357'},
+      {c:'CZ',n:'Czech Republic',d:'+420'},
+      {c:'CI',n:'Côte d\'Ivoire',d:'+225'},
+      {c:'DK',n:'Denmark',d:'+45'},
+      {c:'DJ',n:'Djibouti',d:'+253'},
+      {c:'DM',n:'Dominica',d:'+1767'},
+      {c:'DO',n:'Dominican Republic',d:'+1809'},
+      {c:'EC',n:'Ecuador',d:'+593'},
+      {c:'EG',n:'Egypt',d:'+20'},
+      {c:'SV',n:'El Salvador',d:'+503'},
+      {c:'GQ',n:'Equatorial Guinea',d:'+240'},
+      {c:'ER',n:'Eritrea',d:'+291'},
+      {c:'EE',n:'Estonia',d:'+372'},
+      {c:'ET',n:'Ethiopia',d:'+251'},
+      {c:'FK',n:'Falkland Islands',d:'+500'},
+      {c:'FO',n:'Faroe Islands',d:'+298'},
+      {c:'FJ',n:'Fiji',d:'+679'},
+      {c:'FI',n:'Finland',d:'+358'},
+      {c:'FR',n:'France',d:'+33'},
+      {c:'GF',n:'French Guiana',d:'+594'},
+      {c:'PF',n:'French Polynesia',d:'+689'},
+      {c:'GA',n:'Gabon',d:'+241'},
+      {c:'GM',n:'Gambia',d:'+220'},
+      {c:'GE',n:'Georgia',d:'+995'},
+      {c:'DE',n:'Germany',d:'+49'},
+      {c:'GH',n:'Ghana',d:'+233'},
+      {c:'GI',n:'Gibraltar',d:'+350'},
+      {c:'GR',n:'Greece',d:'+30'},
+      {c:'GL',n:'Greenland',d:'+299'},
+      {c:'GD',n:'Grenada',d:'+1473'},
+      {c:'GP',n:'Guadeloupe',d:'+590'},
+      {c:'GU',n:'Guam',d:'+1671'},
+      {c:'GT',n:'Guatemala',d:'+502'},
+      {c:'GN',n:'Guinea',d:'+224'},
+      {c:'GW',n:'Guinea-Bissau',d:'+245'},
+      {c:'GY',n:'Guyana',d:'+592'},
+      {c:'HT',n:'Haiti',d:'+509'},
+      {c:'HN',n:'Honduras',d:'+504'},
+      {c:'HK',n:'Hong Kong',d:'+852'},
+      {c:'HU',n:'Hungary',d:'+36'},
+      {c:'IS',n:'Iceland',d:'+354'},
+      {c:'IN',n:'India',d:'+91'},
+      {c:'ID',n:'Indonesia',d:'+62'},
+      {c:'IR',n:'Iran',d:'+98'},
+      {c:'IQ',n:'Iraq',d:'+964'},
+      {c:'IE',n:'Ireland',d:'+353'},
+      {c:'IL',n:'Israel',d:'+972'},
+      {c:'IT',n:'Italy',d:'+39'},
+      {c:'JM',n:'Jamaica',d:'+1876'},
+      {c:'JP',n:'Japan',d:'+81'},
+      {c:'JO',n:'Jordan',d:'+962'},
+      {c:'KZ',n:'Kazakhstan',d:'+7'},
+      {c:'KE',n:'Kenya',d:'+254'},
+      {c:'KI',n:'Kiribati',d:'+686'},
+      {c:'XK',n:'Kosovo',d:'+383'},
+      {c:'KW',n:'Kuwait',d:'+965'},
+      {c:'KG',n:'Kyrgyzstan',d:'+996'},
+      {c:'LA',n:'Laos',d:'+856'},
+      {c:'LV',n:'Latvia',d:'+371'},
+      {c:'LB',n:'Lebanon',d:'+961'},
+      {c:'LS',n:'Lesotho',d:'+266'},
+      {c:'LR',n:'Liberia',d:'+231'},
+      {c:'LY',n:'Libya',d:'+218'},
+      {c:'LI',n:'Liechtenstein',d:'+423'},
+      {c:'LT',n:'Lithuania',d:'+370'},
+      {c:'LU',n:'Luxembourg',d:'+352'},
+      {c:'MO',n:'Macao',d:'+853'},
+      {c:'MG',n:'Madagascar',d:'+261'},
+      {c:'MW',n:'Malawi',d:'+265'},
+      {c:'MY',n:'Malaysia',d:'+60'},
+      {c:'MV',n:'Maldives',d:'+960'},
+      {c:'ML',n:'Mali',d:'+223'},
+      {c:'MT',n:'Malta',d:'+356'},
+      {c:'MH',n:'Marshall Islands',d:'+692'},
+      {c:'MQ',n:'Martinique',d:'+596'},
+      {c:'MR',n:'Mauritania',d:'+222'},
+      {c:'MU',n:'Mauritius',d:'+230'},
+      {c:'YT',n:'Mayotte',d:'+262'},
+      {c:'MX',n:'Mexico',d:'+52'},
+      {c:'FM',n:'Micronesia',d:'+691'},
+      {c:'MD',n:'Moldova',d:'+373'},
+      {c:'MC',n:'Monaco',d:'+377'},
+      {c:'MN',n:'Mongolia',d:'+976'},
+      {c:'ME',n:'Montenegro',d:'+382'},
+      {c:'MS',n:'Montserrat',d:'+1664'},
+      {c:'MA',n:'Morocco',d:'+212'},
+      {c:'MZ',n:'Mozambique',d:'+258'},
+      {c:'MM',n:'Myanmar',d:'+95'},
+      {c:'NA',n:'Namibia',d:'+264'},
+      {c:'NR',n:'Nauru',d:'+674'},
+      {c:'NP',n:'Nepal',d:'+977'},
+      {c:'NL',n:'Netherlands',d:'+31'},
+      {c:'NC',n:'New Caledonia',d:'+687'},
+      {c:'NZ',n:'New Zealand',d:'+64'},
+      {c:'NI',n:'Nicaragua',d:'+505'},
+      {c:'NE',n:'Niger',d:'+227'},
+      {c:'NG',n:'Nigeria',d:'+234'},
+      {c:'NU',n:'Niue',d:'+683'},
+      {c:'NF',n:'Norfolk Island',d:'+672'},
+      {c:'KP',n:'North Korea',d:'+850'},
+      {c:'MK',n:'North Macedonia',d:'+389'},
+      {c:'NO',n:'Norway',d:'+47'},
+      {c:'OM',n:'Oman',d:'+968'},
+      {c:'PK',n:'Pakistan',d:'+92'},
+      {c:'PW',n:'Palau',d:'+680'},
+      {c:'PS',n:'Palestine',d:'+970'},
+      {c:'PA',n:'Panama',d:'+507'},
+      {c:'PG',n:'Papua New Guinea',d:'+675'},
+      {c:'PY',n:'Paraguay',d:'+595'},
+      {c:'PE',n:'Peru',d:'+51'},
+      {c:'PH',n:'Philippines',d:'+63'},
+      {c:'PL',n:'Poland',d:'+48'},
+      {c:'PT',n:'Portugal',d:'+351'},
+      {c:'PR',n:'Puerto Rico',d:'+1787'},
+      {c:'QA',n:'Qatar',d:'+974'},
+      {c:'RO',n:'Romania',d:'+40'},
+      {c:'RU',n:'Russia',d:'+7'},
+      {c:'RW',n:'Rwanda',d:'+250'},
+      {c:'RE',n:'Réunion',d:'+262'},
+      {c:'SH',n:'Saint Helena',d:'+290'},
+      {c:'KN',n:'Saint Kitts and Nevis',d:'+1869'},
+      {c:'LC',n:'Saint Lucia',d:'+1758'},
+      {c:'PM',n:'Saint Pierre and Miquelon',d:'+508'},
+      {c:'VC',n:'Saint Vincent and the Grenadines',d:'+1784'},
+      {c:'WS',n:'Samoa',d:'+685'},
+      {c:'SM',n:'San Marino',d:'+378'},
+      {c:'SA',n:'Saudi Arabia',d:'+966'},
+      {c:'SN',n:'Senegal',d:'+221'},
+      {c:'RS',n:'Serbia',d:'+381'},
+      {c:'SC',n:'Seychelles',d:'+248'},
+      {c:'SL',n:'Sierra Leone',d:'+232'},
+      {c:'SG',n:'Singapore',d:'+65'},
+      {c:'SK',n:'Slovakia',d:'+421'},
+      {c:'SI',n:'Slovenia',d:'+386'},
+      {c:'SB',n:'Solomon Islands',d:'+677'},
+      {c:'SO',n:'Somalia',d:'+252'},
+      {c:'ZA',n:'South Africa',d:'+27'},
+      {c:'KR',n:'South Korea',d:'+82'},
+      {c:'ES',n:'Spain',d:'+34'},
+      {c:'LK',n:'Sri Lanka',d:'+94'},
+      {c:'SD',n:'Sudan',d:'+249'},
+      {c:'SR',n:'Suriname',d:'+597'},
+      {c:'SZ',n:'Swaziland',d:'+268'},
+      {c:'SE',n:'Sweden',d:'+46'},
+      {c:'CH',n:'Switzerland',d:'+41'},
+      {c:'SY',n:'Syria',d:'+963'},
+      {c:'ST',n:'São Tomé and Príncipe',d:'+239'},
+      {c:'TW',n:'Taiwan',d:'+886'},
+      {c:'TJ',n:'Tajikistan',d:'+992'},
+      {c:'TZ',n:'Tanzania',d:'+255'},
+      {c:'TH',n:'Thailand',d:'+66'},
+      {c:'TL',n:'Timor-Leste',d:'+670'},
+      {c:'TG',n:'Togo',d:'+228'},
+      {c:'TK',n:'Tokelau',d:'+690'},
+      {c:'TO',n:'Tonga',d:'+676'},
+      {c:'TT',n:'Trinidad and Tobago',d:'+1868'},
+      {c:'TN',n:'Tunisia',d:'+216'},
+      {c:'TR',n:'Turkey',d:'+90'},
+      {c:'TM',n:'Turkmenistan',d:'+993'},
+      {c:'TC',n:'Turks and Caicos Islands',d:'+1649'},
+      {c:'TV',n:'Tuvalu',d:'+688'},
+      {c:'UG',n:'Uganda',d:'+256'},
+      {c:'UA',n:'Ukraine',d:'+380'},
+      {c:'AE',n:'United Arab Emirates',d:'+971'},
+      {c:'GB',n:'United Kingdom',d:'+44'},
+      {c:'US',n:'United States',d:'+1'},
+      {c:'UY',n:'Uruguay',d:'+598'},
+      {c:'UZ',n:'Uzbekistan',d:'+998'},
+      {c:'VU',n:'Vanuatu',d:'+678'},
+      {c:'VA',n:'Vatican City',d:'+39'},
+      {c:'VE',n:'Venezuela',d:'+58'},
+      {c:'VN',n:'Vietnam',d:'+84'},
+      {c:'WF',n:'Wallis and Futuna',d:'+681'},
+      {c:'YE',n:'Yemen',d:'+967'},
+      {c:'ZM',n:'Zambia',d:'+260'},
+      {c:'ZW',n:'Zimbabwe',d:'+263'}
+    ];
+
+  // Helper: nadji zemlju po ISO kodu
+  function findCountryByCode(code) {
+    if (!code) return null;
+    code = code.toUpperCase();
+    for (var i = 0; i < ND_COUNTRIES.length; i++) {
+      if (ND_COUNTRIES[i].c === code) return ND_COUNTRIES[i];
+    }
+    return null;
+  }
+
+  // Helper: konvertuj ISO 2-letter kod u flag emoji (regional indicator)
+  function flagEmoji(code) {
+    if (!code || code.length !== 2) return '';
+    var A = 0x1F1E6;
+    var c1 = code.toUpperCase().charCodeAt(0) - 65;
+    var c2 = code.toUpperCase().charCodeAt(1) - 65;
+    if (c1 < 0 || c1 > 25 || c2 < 0 || c2 > 25) return '';
+    return String.fromCodePoint(A + c1) + String.fromCodePoint(A + c2);
+  }
+
+  // ====================================================================
+  // IP GEOLOCATION - detektuj zemlju iz IP adrese
+  // ====================================================================
+  // 3 fallback providera (ako prvi padne, ide drugi, itd.)
+  function detectCountryByIP(callback) {
+    var providers = [
+      { url: 'https://api.country.is/',  field: 'country' },
+      { url: 'https://ipwho.is/',         field: 'country_code' },
+      { url: 'https://ipapi.co/json/',    field: 'country_code' }
+    ];
+    function tryProvider(idx) {
+      if (idx >= providers.length) {
+        if (callback) callback(null);
+        return;
+      }
+      var p = providers[idx];
+      fetch(p.url, { signal: AbortSignal.timeout(3000) })
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function(data) {
+          var code = data && data[p.field];
+          if (code) {
+            if (callback) callback(code);
+          } else {
+            throw new Error('No country code');
+          }
+        })
+        .catch(function() {
+          tryProvider(idx + 1);
+        });
+    }
+    tryProvider(0);
   }
 
   // ====================================================================
@@ -238,7 +525,7 @@
         title: 'Unesi svoj broj telefona (nije obavezno)',
         description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da odlučiš da li je dizajn karijera za tebe i koji smer ima smisla.',
         required: false,
-        placeholder: '6X XXX XXXX'
+        placeholder: '060 1234567'
       },
 
       // ---- Q18 Podaci (email/ime) ----
@@ -642,8 +929,18 @@
     else if (field.type === 'phone') {
       inner = renderQuestionHeader(field) +
               '<div class="nd-phone-row">' +
-                '<span class="nd-phone-cc">+381</span>' +
-                '<div class="nd-input-wrap" style="flex:1;"><input type="tel" class="nd-input" placeholder="' + escapeHtml(field.placeholder || '') + '" inputmode="tel" autocomplete="tel-national"></div>' +
+                '<button type="button" class="nd-country-trigger" aria-expanded="false" aria-haspopup="listbox">' +
+                  '<span class="nd-flag" data-flag></span>' +
+                  '<span class="nd-flag-chevron">⌄</span>' +
+                '</button>' +
+                '<input type="tel" class="nd-input nd-phone-input" placeholder="' + escapeHtml(field.placeholder || '') + '" inputmode="tel" autocomplete="tel-national">' +
+                '<div class="nd-country-dropdown" hidden>' +
+                  '<div class="nd-country-search-wrap">' +
+                    '<input type="text" class="nd-country-search" placeholder="Search countries">' +
+                    '<svg class="nd-country-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>' +
+                  '</div>' +
+                  '<div class="nd-country-list" role="listbox"></div>' +
+                '</div>' +
               '</div>' +
               '<div class="nd-actions"><button type="button" class="nd-btn-primary"><span class="nd-btn-label">OK</span></button></div>';
     }
@@ -801,18 +1098,140 @@
       });
     }
     else if (field.type === 'phone') {
-      var pin = el.querySelector('.nd-input');
+      var pin = el.querySelector('.nd-phone-input');
       var pok = el.querySelector('.nd-btn-primary');
+      var trigger = el.querySelector('.nd-country-trigger');
+      var flagEl = el.querySelector('[data-flag]');
+      var dropdown = el.querySelector('.nd-country-dropdown');
+      var searchInput = el.querySelector('.nd-country-search');
+      var listEl = el.querySelector('.nd-country-list');
+
+      // Default zemlja: Srbija (radi i kao fallback ako IP detection padne)
+      var selectedCountry = findCountryByCode('RS');
+
+      // Renderuj zastavicu i čuvaj selected stanje
+      function setCountry(country) {
+        if (!country) return;
+        selectedCountry = country;
+        flagEl.textContent = flagEmoji(country.c);
+        flagEl.title = country.n + ' (' + country.d + ')';
+        // Update selected u listi
+        var items = listEl.querySelectorAll('.nd-country-item');
+        items.forEach(function(item) {
+          item.classList.toggle('nd-selected', item.dataset.code === country.c);
+        });
+      }
+
+      // Renderuj listu zemalja (sa filterom za search)
+      function renderList(filterText) {
+        var filter = (filterText || '').trim().toLowerCase();
+        var html = '';
+        var matched = 0;
+        for (var i = 0; i < ND_COUNTRIES.length; i++) {
+          var c = ND_COUNTRIES[i];
+          if (filter && c.n.toLowerCase().indexOf(filter) === -1 && c.d.indexOf(filter) === -1) continue;
+          var isSelected = selectedCountry && c.c === selectedCountry.c;
+          html += '<button type="button" class="nd-country-item' + (isSelected ? ' nd-selected' : '') + '" ' +
+                    'data-code="' + c.c + '" data-dial="' + c.d + '" role="option">' +
+                    '<span class="nd-country-item-flag">' + flagEmoji(c.c) + '</span>' +
+                    '<span class="nd-country-item-name">' + escapeHtml(c.n) + '</span>' +
+                    '<span class="nd-country-item-dial">' + c.d + '</span>' +
+                  '</button>';
+          matched++;
+        }
+        if (matched === 0) {
+          html = '<div class="nd-country-empty">No countries found</div>';
+        }
+        listEl.innerHTML = html;
+        // Scroll selected u vidno polje
+        if (!filter) {
+          var sel = listEl.querySelector('.nd-country-item.nd-selected');
+          if (sel) {
+            setTimeout(function() {
+              sel.scrollIntoView({ block: 'center', behavior: 'instant' });
+            }, 0);
+          }
+        }
+      }
+
+      // Otvori/zatvori dropdown
+      function openDropdown() {
+        dropdown.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        renderList('');
+        searchInput.value = '';
+        setTimeout(function() { searchInput.focus(); }, 50);
+      }
+      function closeDropdown() {
+        dropdown.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (dropdown.hidden) openDropdown();
+        else closeDropdown();
+      });
+
+      // Klik na stavku liste
+      listEl.addEventListener('click', function(e) {
+        var item = e.target.closest('.nd-country-item');
+        if (!item) return;
+        var country = findCountryByCode(item.dataset.code);
+        if (country) {
+          setCountry(country);
+          closeDropdown();
+          pin.focus();
+        }
+      });
+
+      // Search filter
+      searchInput.addEventListener('input', function() {
+        renderList(searchInput.value);
+      });
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closeDropdown(); trigger.focus(); }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          var firstItem = listEl.querySelector('.nd-country-item');
+          if (firstItem) firstItem.click();
+        }
+      });
+
+      // Klik van dropdown-a → zatvori
+      document.addEventListener('click', function(e) {
+        if (!dropdown.hidden && !dropdown.contains(e.target) && !trigger.contains(e.target)) {
+          closeDropdown();
+        }
+      });
+
+      // Submit
       pok.addEventListener('click', function() {
         var raw = (pin.value || '').trim();
-        // sklanjamo razmake / crte
         var cleaned = raw.replace(/[\s\-\(\)]/g, '');
-        var full = cleaned ? ('+381' + cleaned.replace(/^0+/, '')) : '';
+        // Ukloni vodeću nulu (lokalni format: 060 -> 60)
+        cleaned = cleaned.replace(/^0+/, '');
+        var dialCode = selectedCountry ? selectedCountry.d : '+381';
+        var full = cleaned ? (dialCode + cleaned) : '';
         state.answers[field.key] = full;
+        // Sačuvaj i country code za payload
+        state.answers[field.key + '_country'] = selectedCountry ? selectedCountry.c : '';
         advance(field.key);
       });
       pin.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') { e.preventDefault(); pok.click(); }
+      });
+
+      // Inicijalno: postavi default Srbija, pa pokušaj IP detection
+      setCountry(selectedCountry);
+      detectCountryByIP(function(code) {
+        if (code) {
+          var detected = findCountryByCode(code);
+          if (detected) {
+            setCountry(detected);
+            console.log('[ND Kviz] Country auto-detected from IP:', detected.n);
+          }
+        }
       });
     }
     else if (field.type === 'contact') {
@@ -1035,6 +1454,7 @@
     var contact = state.answers.q18_kontakt || {};
     var instagram = state.answers.q16_instagram || '';
     var phone = state.answers.q17_phone || '';
+    var phoneCountry = state.answers.q17_phone_country || '';
 
     return {
       submitted_at: new Date().toISOString(),
@@ -1062,6 +1482,7 @@
         name: contact.name || '',
         email: contact.email || '',
         phone: phone,
+        phone_country: phoneCountry,
         instagram: instagram
       },
 
