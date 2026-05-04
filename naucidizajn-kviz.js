@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.8.0 */
+/* Verzija: 1.9 (final) — sa env detection (test vs prod) */
 
 (function() {
   'use strict';
@@ -7,14 +7,35 @@
   // ====================================================================
   // KONFIGURACIJA — promeni pre deploy-a
   // ====================================================================
+  // Detekcija test okruženja:
+  // - Na github.io ili localhost: pixel se ne pokreće, webhook se NE šalje
+  //   (samo console.log, da ne kvarimo statistiku ni Bitrix sa test podacima)
+  // - Na bilo kom drugom domenu (npr. naucidizajn.com): sve radi normalno
+  var ND_IS_TEST_ENV = (function() {
+    if (typeof location === 'undefined') return false;
+    var host = (location.hostname || '').toLowerCase();
+    return host === 'localhost' ||
+           host === '127.0.0.1' ||
+           host.indexOf('.github.io') !== -1 ||
+           host.endsWith('github.io');
+  })();
+
   var ND_CONFIG = {
     webhookUrl: 'https://hook.eu2.make.com/56oflcq2abftwtm523pefqcwonjj3jsv',
     formId: 'naucidizajn-1minut-kviz',
     fbPixelId: '415729519579969',
     redirectAfterSubmit: true,
     submitTimeoutMs: 8000,
-    sendOnExit: true // šalji webhook i ako korisnik napusti formu (partial response)
+    sendOnExit: true, // šalji webhook i ako korisnik napusti formu (partial response)
+    isTestEnv: ND_IS_TEST_ENV
   };
+
+  if (ND_IS_TEST_ENV) {
+    console.log('%c[Nauči Dizajn Kviz] TEST ENV detected (' + location.hostname + ')', 'color:#DBFF00;font-weight:bold');
+    console.log('  • Facebook Pixel: DISABLED');
+    console.log('  • Webhook to Make: DISABLED (samo console.log payload-a)');
+    console.log('  • Sve ostalo radi normalno');
+  }
 
   // ====================================================================
   // PODACI FORME (1:1 mapirano iz Typeform JSON-a)
@@ -267,6 +288,10 @@
   // ====================================================================
   function initFbPixel() {
     if (!ND_CONFIG.fbPixelId) return;
+    if (ND_CONFIG.isTestEnv) {
+      console.log('[ND Kviz] Pixel init skipped (test env)');
+      return;
+    }
     if (window.fbq) return; // već učitan
     /* eslint-disable */
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -280,6 +305,10 @@
   }
 
   function fbqEvent(name, params) {
+    if (ND_CONFIG.isTestEnv) {
+      console.log('[ND Kviz] Pixel event (mocked):', name, params);
+      return;
+    }
     if (window.fbq) {
       try { window.fbq('track', name, params || {}); } catch(e) {}
     }
@@ -941,6 +970,11 @@
   }
 
   function sendFetch(url, payload, timeoutMs) {
+    if (ND_CONFIG.isTestEnv) {
+      console.log('%c[ND Kviz] Webhook (TEST - not sent):', 'color:#DBFF00;font-weight:bold');
+      console.log(payload);
+      return Promise.resolve({ ok: true, _test: true });
+    }
     if (!url || url.indexOf('REPLACE') !== -1) return Promise.reject(new Error('Webhook URL not configured'));
     var ctrl = new AbortController();
     var t = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 8000);
@@ -960,6 +994,10 @@
     if (state.visitedKeys.length === 0) return;
     state.exitedEarly = true;
     var payload = buildPayload({ complete: false, exitedEarly: true });
+    if (ND_CONFIG.isTestEnv) {
+      console.log('[ND Kviz] Partial response (TEST - not sent):', payload);
+      return;
+    }
     sendBeaconJson(ND_CONFIG.webhookUrl, payload);
   }
 
