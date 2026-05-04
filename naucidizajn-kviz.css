@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.16 - dropdown smaller, #2E321F bg, choice min-width */
+/* Verzija: 1.17 - dropdown 320x45 items, SVG chevron */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -357,9 +357,15 @@
     outline-offset: 2px;
   }
   #nd-quiz .nd-flag-chevron {
-    font-size: 16px;
+    width: 12px;
+    height: 8px;
     color: var(--nd-answer);
-    line-height: 1;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  /* Kad je dropdown otvoren, strelica rotirana */
+  #nd-quiz .nd-country-trigger[aria-expanded="true"] .nd-flag-chevron {
+    transform: rotate(180deg);
   }
 
   /* Phone input direktno u row-u */
@@ -372,11 +378,12 @@
 
   /* Country dropdown - apsolutno pozicioniran ispod row-a */
   /* Bg #232421 (kao u originalu), žuti glow border */
+  /* 24px padding sa strana, items su 320px široki, scrollbar dodatnih 8px */
   #nd-quiz .nd-country-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    width: 380px;
+    width: 376px; /* 320 + 24*2 + 8 (scrollbar prostor) */
     max-width: 95vw;
     max-height: 380px;
     background: #232421;
@@ -386,7 +393,6 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* Padding samo gore i sa strana 0 - items dobijaju svoj horizontalni padding */
     padding: 12px 0 0 0;
   }
   #nd-quiz .nd-country-dropdown[hidden] {
@@ -396,7 +402,7 @@
   /* Search bar gore u dropdown-u - bez border-bottom-a u originalu */
   #nd-quiz .nd-country-search-wrap {
     position: relative;
-    margin: 0 12px 8px 12px;
+    margin: 0 24px 8px 24px;
   }
   #nd-quiz .nd-country-search {
     width: 100%;
@@ -423,12 +429,12 @@
     pointer-events: none;
   }
 
-  /* Lista zemalja - scrollable, items full-width */
-  /* Padding 4px sa strana da se selected border ne seče */
+  /* Lista zemalja - scrollable, items 320px široki */
+  /* Padding 24px sa strana, malo manji desno za scrollbar */
   #nd-quiz .nd-country-list {
     flex: 1;
     overflow-y: auto;
-    padding: 4px 8px 4px 12px;
+    padding: 4px 16px 12px 24px;
     scrollbar-width: thin;
     scrollbar-color: var(--nd-answer) transparent;
   }
@@ -443,7 +449,7 @@
     border-radius: 3px;
   }
 
-  /* Pojedinačna stavka u listi - ISTI STIL KAO RADIO BUTTON
+  /* Pojedinačna stavka u listi - 320x45 sa padding 6px/12px
      Normal:   bg #2E321F, box-shadow rgba(219,255,0,0.1) 1px
      Hover:    bg #363B1B, box-shadow rgba(219,255,0,0.4) 1px
      Selected: bg #222421, box-shadow #DBFF00 2px
@@ -453,9 +459,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%;
+    width: 320px;
+    height: 45px;
     box-sizing: border-box;
-    padding: 7px 12px;
+    padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
     color: var(--nd-answer);
@@ -473,7 +480,7 @@
     background-color: #222421;
     box-shadow: #DBFF00 0 0 0 2px;
   }
-  /* Poslednja stavka nema margin-bottom (da se ne pojavi prazan razmak ispod) */
+  /* Poslednja stavka nema margin-bottom */
   #nd-quiz .nd-country-item:last-child {
     margin-bottom: 0;
   }
