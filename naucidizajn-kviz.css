@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.10 - Q18 layout (3 fields vertical) + Submit two-step */
+/* Verzija: 1.11 - dinamičko numerisanje + scale auto-next + Q18 fontovi + Q15 routing fix */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -158,8 +158,8 @@
   #nd-quiz .nd-q-required { color: var(--nd-answer); margin-left: 1px; }
   #nd-quiz .nd-q-desc {
     margin: -8px 0 24px 0;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 18px;
+    line-height: 24px;
     color: var(--nd-text-muted);
     padding-left: 30px;
   }
@@ -306,24 +306,27 @@
   #nd-quiz .nd-input-wrap:focus-within { border-bottom-color: var(--nd-answer); }
   #nd-quiz .nd-input {
     width: 100%;
-    font-size: 22px;
+    font-size: 26px;
     color: var(--nd-answer);
     padding: 6px 0;
   }
   #nd-quiz .nd-input-label {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 600;
     color: rgba(255,255,255,0.65);
     margin-bottom: 6px;
     display: block;
   }
-  #nd-quiz .nd-phone-row { display: flex; gap: 8px; align-items: flex-end; margin-left: 32px; margin-bottom: 24px; }
+  #nd-quiz .nd-phone-row { display: flex; gap: 8px; align-items: stretch; margin-left: 32px; margin-bottom: 24px; }
   #nd-quiz .nd-phone-cc {
     flex: 0 0 auto;
-    font-size: 22px;
+    font-size: 26px;
+    line-height: 1;
     color: var(--nd-answer);
     padding-bottom: 8px;
     border-bottom: 2px solid rgba(219, 255, 0, 0.4);
+    display: flex;
+    align-items: center;
   }
 
   /* Contact info group (Q18 - First name / Last name / Email - vertikalno) */
