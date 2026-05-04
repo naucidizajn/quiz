@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.13 - 225 zemalja, IP geolocation, custom dropdown */
+/* Verzija: 1.15 - flag-icons biblioteka */
 
 (function() {
   'use strict';
@@ -278,14 +278,16 @@
     return null;
   }
 
-  // Helper: konvertuj ISO 2-letter kod u flag emoji (regional indicator)
-  function flagEmoji(code) {
+  // Helper: vraća HTML za prikaz zastavice (flag-icons biblioteka, CSS klase)
+  // Koristi <span class="fi fi-rs"> za sve zastavice - radi na svim browser-ima
+  function flagHtml(code) {
     if (!code || code.length !== 2) return '';
-    var A = 0x1F1E6;
-    var c1 = code.toUpperCase().charCodeAt(0) - 65;
-    var c2 = code.toUpperCase().charCodeAt(1) - 65;
-    if (c1 < 0 || c1 > 25 || c2 < 0 || c2 > 25) return '';
-    return String.fromCodePoint(A + c1) + String.fromCodePoint(A + c2);
+    return '<span class="fi fi-' + code.toLowerCase() + '"></span>';
+  }
+
+  // Backward compat (možda ima negde poziv)
+  function flagEmoji(code) {
+    return flagHtml(code);
   }
 
   // ====================================================================
@@ -1113,7 +1115,7 @@
       function setCountry(country) {
         if (!country) return;
         selectedCountry = country;
-        flagEl.textContent = flagEmoji(country.c);
+        flagEl.innerHTML = flagHtml(country.c);
         flagEl.title = country.n + ' (' + country.d + ')';
         // Update selected u listi
         var items = listEl.querySelectorAll('.nd-country-item');
