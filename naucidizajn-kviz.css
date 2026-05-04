@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.19 - mojibake fix (š č ć ž đ pravilno) */
+/* Verzija: 1.20 - svi posebni karakteri (€ – „" itd.) ispravno */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
