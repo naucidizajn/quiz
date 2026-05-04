@@ -1,4 +1,4 @@
-/* Verzija: v1.21 */
+/* Verzija: v1.22 */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -315,7 +315,7 @@
   }
   #nd-quiz .nd-input-label {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 400;
     color: #FFFFFF;
     margin-bottom: 2px;
     display: block;
