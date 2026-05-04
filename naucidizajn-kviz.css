@@ -1,5 +1,5 @@
 /* Nauči Dizajn — 1-minut kviz */
-/* Verzija: 1.17 - dropdown 320x45 items, SVG chevron */
+/* Verzija: 1.18 - sve tekstove vraćene 1:1 sa originalom */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -34,8 +34,7 @@
     width: 100%;
     min-height: 100vh;
     position: relative;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -318,7 +317,7 @@
   #nd-quiz .nd-input-label {
     font-size: 20px;
     font-weight: 600;
-    color: rgba(255,255,255,0.65);
+    color: #FFFFFF;
     margin-bottom: 6px;
     display: block;
   }
