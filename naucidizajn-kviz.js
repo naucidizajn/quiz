@@ -1,4 +1,4 @@
-/* Verzija: v1.26 */
+/* Verzija: v1.27 */
 
 (function() {
   'use strict';
