@@ -1,4 +1,4 @@
-/* Verzija: v1.24 */
+/* Verzija: v1.25 */
 
 (function() {
   'use strict';
@@ -731,50 +731,46 @@
     // Q7 odgovor poznat?
     if (a.q7_continue) {
       if (a.q7_continue.skipToEnd) {
-        // 'NE, pokaži rezultat' -> Q1...Q7 + Q18 = 8 koraka
-        return 8;
+        // 'NE, pokaži rezultat' -> Q0 + Q1...Q7 + Q18 = 9 koraka
+        return 9;
       }
       // 'DA, idemo dalje' - Q14 odgovor poznat?
       if (a.q14_vec_kod_nas) {
         if (a.q14_vec_kod_nas.skipToEnd) {
-          // 'Da, jesam' -> Q1...Q14 + Q18 = 15 koraka
-          return 15;
+          // 'Da, jesam' -> Q0 + Q1...Q14 + Q18 = 16 koraka
+          return 16;
         }
-        // 'Nisam' -> Q1...Q15 + (Q16 ili Q17) + Q18 = 17 koraka
-        return 17;
+        // 'Nisam' -> Q0 + Q1...Q15 + (Q16 ili Q17) + Q18 = 18 koraka
+        return 18;
       }
-      // Q7 'DA', Q14 nije odgovoreno: pretpostavi 'Da, jesam' (kraća putanja) = 15
-      return 15;
+      // Q7 'DA', Q14 nije odgovoreno: pretpostavi 'Da, jesam' (kraća putanja) = 16
+      return 16;
     }
 
-    // Pre Q7: pretpostavi 'NE' (najkraća putanja) = 8 koraka
-    // Tako Q7 dolazi na poziciju 7/8 = ~87% (kao u originalnom Typeformu)
-    return 8;
+    // Pre Q7: pretpostavi 'NE' (najkraća putanja) = 9 koraka
+    return 9;
   }
 
-  // Vraća redni broj trenutnog koraka u predviđenoj putanji (q0_email = 0, ne broji se)
+  // Vraća redni broj trenutnog koraka u predviđenoj putanji (q0_email = 1, Q1 = 2, ...)
   function getStepNumberInPath() {
     if (state.currentIdx < 0) return 0;
     var key = FORM.fields[state.currentIdx].key;
 
-    // q0_email = 0 (ne broji se u progress baru)
-    if (key === 'q0_email') return 0;
-
-    // Q1-Q14 idu linearno: Q1=1, Q2=2, ... Q14=14
-    // Map by key prefix for safety
+    // Linearne pozicije (q0_email = 1, Q1 = 2, ... Q14 = 15)
     var linearMap = {
-      'q1_zadatak': 1, 'q2_vecera': 2, 'q3_nervira': 3, 'q4_ucenje': 4,
-      'q5_stan': 5, 'q6_zabavno': 6, 'q7_continue': 7, 'q8_situacija': 8,
-      'q9_vreme_dnevno': 9, 'q10_kada_zarada': 10, 'q11_zarada_cilj': 11,
-      'q12_motivacija': 12, 'q13_budzet': 13, 'q14_vec_kod_nas': 14
+      'q0_email': 1,
+      'q1_zadatak': 2, 'q2_vecera': 3, 'q3_nervira': 4, 'q4_ucenje': 5,
+      'q5_stan': 6, 'q6_zabavno': 7, 'q7_continue': 8, 'q8_situacija': 9,
+      'q9_vreme_dnevno': 10, 'q10_kada_zarada': 11, 'q11_zarada_cilj': 12,
+      'q12_motivacija': 13, 'q13_budzet': 14, 'q14_vec_kod_nas': 15
     };
     if (linearMap[key]) return linearMap[key];
 
-    // Q15 = pozicija 15
-    if (key === 'q15_60_dana') return 15;
+    // Q15 = pozicija 16
+    if (key === 'q15_60_dana') return 16;
 
-    // Q16 ili Q17 = pozicija 16
-    if (key === 'q16_instagram' || key === 'q17_phone') return 16;
+    // Q16 ili Q17 = pozicija 17
+    if (key === 'q16_instagram' || key === 'q17_phone') return 17;
 
     // Q18 = poslednja pozicija (zavisi od putanje)
     if (key === 'q18_kontakt') return predictTotalSteps();
@@ -838,9 +834,7 @@
   // Razlog: korisnik može da preskoči pitanja, pa trenutni step može biti npr. 8. iako u JSON-u ima broj 18.
   function getDisplayNumber(field) {
     var path = getPredictedPath();
-    // q0_email se ne broji — Q1 ostaje "1"
-    var filtered = path.filter(function(k) { return k !== 'q0_email'; });
-    var idx = filtered.indexOf(field.key);
+    var idx = path.indexOf(field.key);
     if (idx === -1) return field.num; // fallback ako nije u trenutnoj putanji
     return idx + 1;
   }
@@ -889,17 +883,13 @@
   }
 
   function renderQuestionHeader(field) {
+    var displayNum = getDisplayNumber(field);
+    var num = '<span class="nd-q-num" aria-hidden="true" data-fieldkey="' + field.key + '">' + displayNum + '</span>';
     var desc = '';
     if (field.description) {
       var descHtml = field.description.replace(/\n/g, '<br>');
       desc = '<p class="nd-q-desc">' + descHtml + '</p>';
     }
-    // Q0 (email) nema broj — to je inicijalni partial submit step
-    if (field.key === 'q0_email') {
-      return '<div class="nd-q-row nd-q-row-no-num">' + renderTitle(field) + '</div>' + desc;
-    }
-    var displayNum = getDisplayNumber(field);
-    var num = '<span class="nd-q-num" aria-hidden="true" data-fieldkey="' + field.key + '">' + displayNum + '</span>';
     return '<div class="nd-q-row">' + num + renderTitle(field) + '</div>' + desc;
   }
 
