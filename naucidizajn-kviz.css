@@ -1,4 +1,4 @@
-/* Verzija: v1.26 */
+/* Verzija: v1.27 */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -586,7 +586,7 @@
 
   /* Back button — bela strelica levo od OK-a (suptilna, ne ometa OK) */
   #nd-quiz .nd-btn-back {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.04);
     color: rgba(255, 255, 255, 0.7);
     border: none;
     width: 40px;
@@ -601,7 +601,7 @@
     padding: 0;
   }
   #nd-quiz .nd-btn-back svg { width: 18px; height: 18px; }
-  #nd-quiz .nd-btn-back:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+  #nd-quiz .nd-btn-back:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.10); }
   #nd-quiz .nd-btn-back:focus-visible { outline: 2px solid var(--nd-button); outline-offset: 2px; color: #FFFFFF; }
 
   #nd-quiz .nd-enter-hint {
