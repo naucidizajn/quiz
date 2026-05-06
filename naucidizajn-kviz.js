@@ -1,4 +1,4 @@
-/* Verzija: v1.23 */
+/* Verzija: v1.24 */
 
 (function() {
   'use strict';
@@ -349,6 +349,15 @@
 
     // Pitanja po redu
     fields: [
+      // ---- Q0 Email (prvi korak — partial submit) ----
+      {
+        key: 'q0_email', num: 0, type: 'email',
+        title: 'Tvoj email',
+        description: 'Pošaljemo ti rezultat kviza, kao i dodatne lekcije koje će ti pomoći da kreneš sa učenjem idealne veštine za tebe',
+        required: true,
+        placeholder: 'name@example.com'
+      },
+
       // ---- Q1-Q6 Quiz pitanja (boduju outcome) ----
       {
         key: 'q1_zadatak', num: 1, type: 'choice',
@@ -743,18 +752,23 @@
     return 8;
   }
 
-  // Vraća redni broj trenutnog koraka u predviđenoj putanji
+  // Vraća redni broj trenutnog koraka u predviđenoj putanji (q0_email = 0, ne broji se)
   function getStepNumberInPath() {
     if (state.currentIdx < 0) return 0;
     var key = FORM.fields[state.currentIdx].key;
 
-    // Mapiranje: koja pozicija u putanji?
-    // Q1-Q7 = pozicije 1-7 u svim putanjama
-    var idx = state.currentIdx;
-    if (idx <= 6) return idx + 1; // Q1-Q7
+    // q0_email = 0 (ne broji se u progress baru)
+    if (key === 'q0_email') return 0;
 
-    // Q8-Q14 = pozicije 8-14 u dugim putanjama
-    if (idx <= 13) return idx + 1;
+    // Q1-Q14 idu linearno: Q1=1, Q2=2, ... Q14=14
+    // Map by key prefix for safety
+    var linearMap = {
+      'q1_zadatak': 1, 'q2_vecera': 2, 'q3_nervira': 3, 'q4_ucenje': 4,
+      'q5_stan': 5, 'q6_zabavno': 6, 'q7_continue': 7, 'q8_situacija': 8,
+      'q9_vreme_dnevno': 9, 'q10_kada_zarada': 10, 'q11_zarada_cilj': 11,
+      'q12_motivacija': 12, 'q13_budzet': 13, 'q14_vec_kod_nas': 14
+    };
+    if (linearMap[key]) return linearMap[key];
 
     // Q15 = pozicija 15
     if (key === 'q15_60_dana') return 15;
@@ -765,10 +779,13 @@
     // Q18 = poslednja pozicija (zavisi od putanje)
     if (key === 'q18_kontakt') return predictTotalSteps();
 
-    return idx + 1;
+    return state.currentIdx + 1;
   }
   function getNextKey(currentKey) {
     var a = state.answers;
+
+    // Q0 email -> Q1 (start kviz)
+    if (currentKey === 'q0_email') return 'q1_zadatak';
 
     // Q7: skip-to-end (NE pokaži rezultat odmah)
     if (currentKey === 'q7_continue' && a.q7_continue && a.q7_continue.skipToEnd) return 'q18_kontakt';
@@ -821,7 +838,9 @@
   // Razlog: korisnik može da preskoči pitanja, pa trenutni step može biti npr. 8. iako u JSON-u ima broj 18.
   function getDisplayNumber(field) {
     var path = getPredictedPath();
-    var idx = path.indexOf(field.key);
+    // q0_email se ne broji — Q1 ostaje "1"
+    var filtered = path.filter(function(k) { return k !== 'q0_email'; });
+    var idx = filtered.indexOf(field.key);
     if (idx === -1) return field.num; // fallback ako nije u trenutnoj putanji
     return idx + 1;
   }
@@ -829,7 +848,7 @@
   // Vraća listu key-eva u redosledu kojim će biti prikazani u trenutnoj putanji
   function getPredictedPath() {
     var a = state.answers;
-    var path = ['q1_zadatak', 'q2_vecera', 'q3_nervira', 'q4_ucenje', 'q5_stan', 'q6_zabavno', 'q7_continue'];
+    var path = ['q0_email', 'q1_zadatak', 'q2_vecera', 'q3_nervira', 'q4_ucenje', 'q5_stan', 'q6_zabavno', 'q7_continue'];
 
     if (a.q7_continue && a.q7_continue.skipToEnd) {
       path.push('q18_kontakt');
@@ -870,15 +889,17 @@
   }
 
   function renderQuestionHeader(field) {
-    var displayNum = getDisplayNumber(field);
-    var num = '<span class="nd-q-num" aria-hidden="true" data-fieldkey="' + field.key + '">' + displayNum + '</span>';
-    // Description može sadržati HTML markup (kontrolišemo izvor, ne korisnik unosi)
-    // \n se konvertuje u <br> za line break
     var desc = '';
     if (field.description) {
       var descHtml = field.description.replace(/\n/g, '<br>');
       desc = '<p class="nd-q-desc">' + descHtml + '</p>';
     }
+    // Q0 (email) nema broj — to je inicijalni partial submit step
+    if (field.key === 'q0_email') {
+      return '<div class="nd-q-row nd-q-row-no-num">' + renderTitle(field) + '</div>' + desc;
+    }
+    var displayNum = getDisplayNumber(field);
+    var num = '<span class="nd-q-num" aria-hidden="true" data-fieldkey="' + field.key + '">' + displayNum + '</span>';
     return '<div class="nd-q-row">' + num + renderTitle(field) + '</div>' + desc;
   }
 
@@ -963,10 +984,14 @@
                   '<label class="nd-input-label">Last name<span class="nd-required">*</span></label>' +
                   '<div class="nd-input-wrap"><input type="text" class="nd-input" data-lastname autocomplete="family-name" placeholder="Smith"></div>' +
                 '</div>' +
-                '<div class="nd-contact-field">' +
-                  '<label class="nd-input-label">Email<span class="nd-required">*</span></label>' +
-                  '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email" placeholder="name@example.com"></div>' +
-                '</div>' +
+              '</div>' +
+              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>' +
+              '<div class="nd-error" hidden></div>';
+    }
+    else if (field.type === 'email') {
+      inner = renderQuestionHeader(field) +
+              '<div class="nd-email-wrap">' +
+                '<div class="nd-input-wrap"><input type="email" class="nd-input" data-q0email autocomplete="email" inputmode="email" placeholder="' + escapeHtml(field.placeholder || '') + '"></div>' +
               '</div>' +
               '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>' +
               '<div class="nd-error" hidden></div>';
@@ -1037,7 +1062,7 @@
     welcome.querySelector('[data-welcome-start]').addEventListener('click', function() {
       fbqEvent('Lead', { content_name: 'Quiz Started' });
       document.getElementById('nd-quiz').classList.add('nd-quiz-started');
-      goToKey(FORM.fields[0].key);
+      goToKey('q0_email');
     });
 
     showStepEl(welcome);
@@ -1047,6 +1072,20 @@
   // STEP BEHAVIOR (per type)
   // ====================================================================
   function attachStepBehavior(field, el) {
+    // Inject back button (svuda osim q0_email — nema gde da se vrati)
+    if (field.key !== 'q0_email') {
+      var actions = el.querySelector('.nd-actions');
+      if (actions && !actions.querySelector('.nd-btn-back')) {
+        var backBtn = document.createElement('button');
+        backBtn.type = 'button';
+        backBtn.className = 'nd-btn-back';
+        backBtn.setAttribute('aria-label', 'Nazad');
+        backBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+        backBtn.addEventListener('click', goBack);
+        actions.insertBefore(backBtn, actions.firstChild);
+      }
+    }
+
     if (field.type === 'choice') {
       var btns = Array.from(el.querySelectorAll('.nd-choice'));
       var ok   = el.querySelector('.nd-btn-primary');
@@ -1245,7 +1284,6 @@
     else if (field.type === 'contact') {
       var firstIn = el.querySelector('input[data-firstname]');
       var lastIn  = el.querySelector('input[data-lastname]');
-      var emailIn = el.querySelector('input[data-email]');
       var ok2     = el.querySelector('.nd-btn-primary');
       var ok2Lbl  = ok2.querySelector('.nd-btn-label');
       var errEl   = el.querySelector('.nd-error');
@@ -1256,9 +1294,7 @@
       function valid() {
         var fn = (firstIn.value || '').trim();
         var ln = (lastIn.value || '').trim();
-        var em = (emailIn.value || '').trim();
-        var emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
-        return fn.length >= 1 && ln.length >= 1 && emOk;
+        return fn.length >= 1 && ln.length >= 1;
       }
       function refresh() {
         ok2.disabled = !valid();
@@ -1270,7 +1306,6 @@
       }
       firstIn.addEventListener('input', refresh);
       lastIn.addEventListener('input', refresh);
-      emailIn.addEventListener('input', refresh);
 
       ok2.addEventListener('click', function() {
         if (!valid()) return;
@@ -1284,12 +1319,13 @@
           return;
         }
 
-        // Drugi klik (submit): šalji formu
+        // Drugi klik (submit): šalji formu. Email uzimamo iz q0_email koraka.
+        var email = state.answers.q0_email || '';
         state.answers[field.key] = {
           firstName: firstIn.value.trim(),
           lastName: lastIn.value.trim(),
           name: firstIn.value.trim() + ' ' + lastIn.value.trim(),
-          email: emailIn.value.trim()
+          email: email
         };
         ok2.disabled = true;
         errEl.hidden = true;
@@ -1300,11 +1336,8 @@
           console.error('[ND-Quiz] submit error:', err);
         });
       });
-      emailIn.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && valid()) { e.preventDefault(); ok2.click(); }
-      });
       // Ctrl+Enter on any field = submit (Typeform-style)
-      [firstIn, lastIn, emailIn].forEach(function(input) {
+      [firstIn, lastIn].forEach(function(input) {
         input.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && valid()) {
             e.preventDefault();
@@ -1313,6 +1346,46 @@
             ok2.click();
           }
         });
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && valid()) {
+            e.preventDefault();
+            ok2.click();
+          }
+        });
+      });
+    }
+    else if (field.type === 'email') {
+      var emInput = el.querySelector('input[data-q0email]');
+      var emOk    = el.querySelector('.nd-btn-primary');
+      var emErr   = el.querySelector('.nd-error');
+
+      function emValid() {
+        var v = (emInput.value || '').trim();
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      }
+      emInput.addEventListener('input', function() {
+        emOk.disabled = !emValid();
+      });
+      // Restore vrednost ako se vraća back-om
+      if (state.answers.q0_email) {
+        emInput.value = state.answers.q0_email;
+        emOk.disabled = !emValid();
+      }
+
+      emOk.addEventListener('click', function() {
+        if (!emValid()) return;
+        var emailVal = emInput.value.trim();
+        state.answers.q0_email = emailVal;
+        // Partial submit (fire-and-forget, ne blokira UX)
+        sendPartialSubmit(emailVal);
+        emErr.hidden = true;
+        // Idi na sledeći korak (Q1)
+        var nextKey = getNextKey('q0_email');
+        if (nextKey === 'END') return;
+        goToKey(nextKey);
+      });
+      emInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && emValid()) { e.preventDefault(); emOk.click(); }
       });
     }
   }
@@ -1376,6 +1449,39 @@
 
     updateProgress();
     updateCurrentIdx(key);
+  }
+
+  // Vrati se na prethodni step (poslednji u visitedKeys, pre trenutnog)
+  function goBack() {
+    if (state.visitedKeys.length < 2) return;
+    // Trenutni je poslednji u visitedKeys; pretposlednji je prethodni
+    var currentKey = state.visitedKeys[state.visitedKeys.length - 1];
+    var prevKey    = state.visitedKeys[state.visitedKeys.length - 2];
+    if (!prevKey) return;
+
+    var prevEl = stepEls[currentKey];
+    var nextEl = stepEls[prevKey];
+    if (!nextEl) return;
+
+    if (prevEl) {
+      prevEl.classList.add('nd-leaving');
+      prevEl.classList.remove('nd-active');
+      setTimeout(function() { prevEl.classList.remove('nd-leaving'); }, 600);
+    }
+
+    // Pop trenutni iz visitedKeys (da ostane tačan progress brojač)
+    state.visitedKeys.pop();
+    activeKey = prevKey;
+    nextEl.classList.add('nd-active');
+
+    setTimeout(function() {
+      var input = nextEl.querySelector('input');
+      if (input) input.focus();
+    }, 200);
+
+    updateAllStepNumbers();
+    updateProgress();
+    updateCurrentIdx(prevKey);
   }
 
   function updateCurrentIdx(key) {
@@ -1455,30 +1561,24 @@
   // ====================================================================
   function buildPayload(opts) {
     opts = opts || {};
-    var winner = computeWinningOutcome();
-    var lq = computeLeadQuality(getFlatAnswers());
+    var isPartial = !!opts.partial;
 
     // Kontakt podaci ako su uneti
     var contact = state.answers.q18_kontakt || {};
     var instagram = state.answers.q16_instagram || '';
     var phone = state.answers.q17_phone || '';
     var phoneCountry = state.answers.q17_phone_country || '';
+    // Email primarno iz q0_email (prvi step), fallback na contact.email (legacy)
+    var email = state.answers.q0_email || contact.email || '';
 
-    return {
+    var payload = {
       submitted_at: new Date().toISOString(),
       started_at: state.startedAt,
       form_id: ND_CONFIG.formId,
       session_id: state.sessionId,
 
-      outcome: {
-        id: winner,
-        title: FORM.outcomes[winner].title,
-        redirect_url: FORM.outcomes[winner].redirect
-      },
-      scores: state.scores,
-
-      lead_quality: lq.quality,
-      lead_quality_reason: lq.reason,
+      is_partial: isPartial,
+      partial_reason: opts.partialReason || '',
 
       completed_full_quiz: !!opts.complete,
       exited_early: !!opts.exitedEarly,
@@ -1488,7 +1588,7 @@
         first_name: contact.firstName || '',
         last_name: contact.lastName || '',
         name: contact.name || '',
-        email: contact.email || '',
+        email: email,
         phone: phone,
         phone_country: phoneCountry,
         instagram: instagram
@@ -1501,6 +1601,22 @@
       referrer: document.referrer || '',
       user_agent: navigator.userAgent
     };
+
+    // Outcome/scores/lead_quality samo kod full submit-a (partial nema dovoljno odgovora)
+    if (!isPartial) {
+      var winner = computeWinningOutcome();
+      var lq = computeLeadQuality(getFlatAnswers());
+      payload.outcome = {
+        id: winner,
+        title: FORM.outcomes[winner].title,
+        redirect_url: FORM.outcomes[winner].redirect
+      };
+      payload.scores = state.scores;
+      payload.lead_quality = lq.quality;
+      payload.lead_quality_reason = lq.reason;
+    }
+
+    return payload;
   }
 
   function getFlatAnswers() {
@@ -1547,6 +1663,7 @@
     var out = {};
     Object.keys(flat).forEach(function(internalKey) {
       if (internalKey === 'q18_kontakt') return; // skip — već u 'contact'
+      if (internalKey === 'q0_email') return;    // skip — već u 'contact.email'
       var label = ND_QUESTION_LABELS[internalKey] || internalKey;
       out[label] = flat[internalKey];
     });
@@ -1579,15 +1696,39 @@
     }).finally(function(){ clearTimeout(t); });
   }
 
+  // Eksplicitni partial submit (poziva se nakon Q0 email koraka)
+  function sendPartialSubmit(emailValue) {
+    if (state.submitted) return;
+    var payload = buildPayload({
+      complete: false,
+      partial: true,
+      partialReason: 'q0_email_entered'
+    });
+    if (ND_CONFIG.isTestEnv) {
+      console.log('%c[ND Kviz] PARTIAL submit (TEST - not sent):', 'color:#DBFF00;font-weight:bold');
+      console.log(payload);
+      return;
+    }
+    // Ne čekamo response — fire-and-forget. Ako padne, korisnik svejedno nastavlja.
+    sendFetch(ND_CONFIG.webhookUrl, payload, 5000).catch(function(err) {
+      console.warn('[ND-Quiz] partial submit failed:', err);
+    });
+  }
+
   // Partial response slanje pri napuštanju (visibilitychange + beforeunload)
   function maybeSendPartial() {
     if (!ND_CONFIG.sendOnExit) return;
     if (state.submitted) return;
     if (state.visitedKeys.length === 0) return;
     state.exitedEarly = true;
-    var payload = buildPayload({ complete: false, exitedEarly: true });
+    var payload = buildPayload({
+      complete: false,
+      exitedEarly: true,
+      partial: true,
+      partialReason: 'exited_early'
+    });
     if (ND_CONFIG.isTestEnv) {
-      console.log('[ND Kviz] Partial response (TEST - not sent):', payload);
+      console.log('[ND Kviz] Exit-partial response (TEST - not sent):', payload);
       return;
     }
     sendBeaconJson(ND_CONFIG.webhookUrl, payload);
