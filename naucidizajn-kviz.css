@@ -1,4 +1,4 @@
-/* Verzija: v1.23 */
+/* Verzija: v1.24 */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -583,6 +583,29 @@
   }
   #nd-quiz .nd-btn-primary:hover { filter: brightness(0.92); }
   #nd-quiz .nd-btn-primary[disabled] { opacity: 0.4; pointer-events: none; }
+
+  /* Back button — okrenuta žuta strelica levo od OK-a */
+  #nd-quiz .nd-btn-back {
+    background: transparent;
+    color: var(--nd-button);
+    border: 2px solid var(--nd-button);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 120ms ease;
+    font-family: inherit;
+    padding: 0;
+  }
+  #nd-quiz .nd-btn-back svg { width: 16px; height: 16px; }
+  #nd-quiz .nd-btn-back:hover { background: rgba(219, 255, 0, 0.12); }
+  #nd-quiz .nd-btn-back:focus-visible { outline: 2px solid var(--nd-button); outline-offset: 2px; }
+
+  /* Header bez broja (q0_email) */
+  #nd-quiz .nd-q-row-no-num .nd-q-title { margin-left: 0; }
 
   #nd-quiz .nd-enter-hint {
     font-size: 13px;
