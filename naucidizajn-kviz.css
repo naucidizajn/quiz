@@ -1,4 +1,4 @@
-/* Verzija: v1.25 */
+/* Verzija: v1.26 */
 
 /* === BODY BACKGROUND OVERRIDE (uklanja beli okvir koji daje Webflow/browser default) === */
   html, body { background: #232421 !important; margin: 0 !important; padding: 0 !important; }
@@ -584,10 +584,10 @@
   #nd-quiz .nd-btn-primary:hover { filter: brightness(0.92); }
   #nd-quiz .nd-btn-primary[disabled] { opacity: 0.4; pointer-events: none; }
 
-  /* Back button — žuta strelica levo od OK-a (suptilna, ne ometa OK) */
+  /* Back button — bela strelica levo od OK-a (suptilna, ne ometa OK) */
   #nd-quiz .nd-btn-back {
     background: transparent;
-    color: var(--nd-button);
+    color: rgba(255, 255, 255, 0.7);
     border: none;
     width: 40px;
     height: 40px;
@@ -596,14 +596,13 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    opacity: 0.45;
-    transition: opacity 120ms ease, background 120ms ease;
+    transition: color 120ms ease, background 120ms ease;
     font-family: inherit;
     padding: 0;
   }
-  #nd-quiz .nd-btn-back svg { width: 16px; height: 16px; }
-  #nd-quiz .nd-btn-back:hover { opacity: 1; background: rgba(219, 255, 0, 0.08); }
-  #nd-quiz .nd-btn-back:focus-visible { outline: 2px solid var(--nd-button); outline-offset: 2px; opacity: 1; }
+  #nd-quiz .nd-btn-back svg { width: 18px; height: 18px; }
+  #nd-quiz .nd-btn-back:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+  #nd-quiz .nd-btn-back:focus-visible { outline: 2px solid var(--nd-button); outline-offset: 2px; color: #FFFFFF; }
 
   #nd-quiz .nd-enter-hint {
     font-size: 13px;
