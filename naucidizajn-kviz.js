@@ -1033,7 +1033,6 @@
 
     // Welcome start button
     welcome.querySelector('[data-welcome-start]').addEventListener('click', function() {
-      fbqEvent('Lead', { content_name: 'Quiz Started' });
       document.getElementById('nd-quiz').classList.add('nd-quiz-started');
       goToKey('q1_zadatak');
     });
