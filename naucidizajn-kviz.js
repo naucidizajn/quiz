@@ -1733,7 +1733,19 @@
   // ====================================================================
   // INIT
   // ====================================================================
+  function injectSkipButtonStyles() {
+    if (document.getElementById('nd-skip-btn-styles')) return;
+    var style = document.createElement('style');
+    style.id = 'nd-skip-btn-styles';
+    style.textContent = ''
+      + '.nd-btn-skip { transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.1s ease; }'
+      + '.nd-btn-skip:hover { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.4) !important; color: rgba(255,255,255,0.9) !important; }'
+      + '.nd-btn-skip:active { transform: scale(0.97); }';
+    document.head.appendChild(style);
+  }
+
   function init() {
+    injectSkipButtonStyles();
     initFbPixel();
     mountAllSteps();
     updateProgress();
