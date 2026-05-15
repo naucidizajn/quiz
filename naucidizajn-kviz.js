@@ -552,12 +552,137 @@
     sessionId: generateSessionId(),
     startedAt: new Date().toISOString(),
     submitted: false,
-    exitedEarly: false
+    exitedEarly: false,
+    // Drop Tracker API
+    serverSessionId: null,      // UUID iz Quiz API-ja (popunjen posle createSession)
+    lastStepEnteredAt: Date.now()
   };
 
   function generateSessionId() {
     return 'nd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
   }
+
+
+  // ====================================================================
+  // NAUČIDIZAJN QUIZ API (Drop Tracker integration)
+  // Paralelno sa Make webhook-om. Fire-and-forget — kviz nastavlja
+  // čak i ako API ne odgovori. Sve greške se logiraju u console.
+  // ====================================================================
+  var QUIZ_API_URL = 'https://naucidizajn-quiz-api-production.up.railway.app';
+
+  function apiLog(msg, data) {
+    if (data !== undefined) console.log('[ND-API]', msg, data);
+    else console.log('[ND-API]', msg);
+  }
+
+  function apiErr(msg, err) {
+    console.warn('[ND-API ERROR]', msg, err);
+  }
+
+  // Detektuje device tip iz user agent-a
+  function detectDeviceType() {
+    var ua = navigator.userAgent || '';
+    if (/(tablet|ipad)/i.test(ua)) return 'tablet';
+    if (/(mobile|iphone|android)/i.test(ua)) return 'mobile';
+    return 'desktop';
+  }
+
+  // POST /api/sessions — kreira sesiju, vraća UUID
+  function apiCreateSession() {
+    var payload = {
+      utm_source:   utmData.utm_source   || null,
+      utm_medium:   utmData.utm_medium   || null,
+      utm_campaign: utmData.utm_campaign || null,
+      utm_content:  utmData.utm_content  || null,
+      utm_term:     utmData.utm_term     || null,
+      gclid:        utmData.gclid        || null,
+      fbclid:       utmData.fbclid       || null,
+      referrer:     document.referrer    || null,
+      device_type:  detectDeviceType()
+    };
+
+    return fetch(QUIZ_API_URL + '/api/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.success && data.data && data.data.session_id) {
+        state.serverSessionId = data.data.session_id;
+        apiLog('Session created:', state.serverSessionId);
+      } else {
+        apiErr('createSession bad response:', data);
+      }
+    })
+    .catch(function(err) {
+      apiErr('createSession failed', err);
+    });
+  }
+
+  // POST /api/events — fire-and-forget
+  function apiLogEvent(eventType, stepNumber, stepName, metadata) {
+    if (!state.serverSessionId) return; // bez sesije ne logujemo
+    var timeOnStep = Date.now() - state.lastStepEnteredAt;
+    var body = {
+      session_id: state.serverSessionId,
+      event_type: eventType,
+      step_number: stepNumber || null,
+      step_name: stepName || null,
+      time_on_step: timeOnStep,
+      metadata: metadata || {}
+    };
+    try {
+      fetch(QUIZ_API_URL + '/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        keepalive: true
+      }).catch(function(err) { apiErr('logEvent failed', err); });
+    } catch (err) {
+      apiErr('logEvent exception', err);
+    }
+  }
+
+  // POST /api/sessions/:id/complete — finalizacija
+  function apiCompleteSession(payload) {
+    if (!state.serverSessionId) return;
+    try {
+      fetch(QUIZ_API_URL + '/api/sessions/' + state.serverSessionId + '/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(function(err) { apiErr('completeSession failed', err); });
+    } catch (err) {
+      apiErr('completeSession exception', err);
+    }
+  }
+
+  // Hardcoded mapping step_name → step_number iz schema_config-a
+  // (jer field.num ne pokriva welcome, q18_kontakt, ni lead_submitted u svim slučajevima)
+  var ND_STEP_NUMBERS = {
+    'q1_zadatak': 1,
+    'q2_vecera': 2,
+    'q3_nervira': 3,
+    'q4_ucenje': 4,
+    'q5_stan': 5,
+    'q6_zabavno': 6,
+    'q7_continue': 7,
+    'q8_situacija': 8,
+    'q9_vreme_dnevno': 9,
+    'q10_kada_zarada': 10,
+    'q11_zarada_cilj': 11,
+    'q12_motivacija': 12,
+    'q13_budzet': 13,
+    'q14_vec_kod_nas': 14,
+    'q15_60_dana': 15,
+    'q16_instagram': 16,
+    'q17_phone': 17,
+    'q18_kontakt': 18,
+    'lead_submitted': 19
+  };
+
 
   // ====================================================================
   // UTM / hidden fields
@@ -1049,6 +1174,8 @@
     // Welcome start button
     welcome.querySelector('[data-welcome-start]').addEventListener('click', function() {
       document.getElementById('nd-quiz').classList.add('nd-quiz-started');
+      // Drop Tracker: kreiraj sesiju u Quiz API (paralelno sa Make-om)
+      apiCreateSession();
       goToKey('q1_zadatak');
     });
 
@@ -1380,6 +1507,37 @@
   }
 
   function advance(currentKey) {
+    // Drop Tracker: log step_completed sa skip detekcijom
+    if (ND_STEP_NUMBERS[currentKey]) {
+      var answer = state.answers[currentKey];
+      var metadata = {};
+
+      // Skip detekcija za Q7 i Q14 (skipToEnd flag na izabranoj opciji)
+      if (currentKey === 'q7_continue' && answer && answer.skipToEnd) {
+        metadata.is_skip = true;
+        metadata.skip_to = 'q18_kontakt';
+      } else if (currentKey === 'q14_vec_kod_nas' && answer && answer.skipToEnd) {
+        metadata.is_skip = true;
+        metadata.skip_to = 'q18_kontakt';
+      } else if ((currentKey === 'q16_instagram' || currentKey === 'q17_phone') && (!answer || answer === '')) {
+        // Skip detekcija za Q16/Q17 (prazan odgovor = skip)
+        metadata.is_skip = true;
+      }
+
+      // Snimi odgovor (ako nije skip)
+      if (answer !== undefined && answer !== '' && !metadata.is_skip) {
+        if (answer && typeof answer === 'object' && 'label' in answer) {
+          metadata.answer = answer.label;
+        } else if (typeof answer === 'object') {
+          metadata.answer = JSON.stringify(answer);
+        } else {
+          metadata.answer = answer;
+        }
+      }
+
+      apiLogEvent('step_completed', ND_STEP_NUMBERS[currentKey], currentKey, metadata);
+    }
+
     // Update brojevi na svim step-ovima jer se putanja možda promenila
     updateAllStepNumbers();
     var nextKey = getNextKey(currentKey);
@@ -1414,6 +1572,12 @@
     activeKey = key;
     state.visitedKeys.push(key);
     nextEl.classList.add('nd-active');
+
+    // Drop Tracker: log step_viewed (samo za prave kviz step-ove, ne welcome/loading)
+    if (ND_STEP_NUMBERS[key]) {
+      apiLogEvent('step_viewed', ND_STEP_NUMBERS[key], key, {});
+      state.lastStepEnteredAt = Date.now(); // reset timer za time_on_step
+    }
 
     // Focus prvi interaktivni element
     setTimeout(function() {
@@ -1708,6 +1872,31 @@
     progressFill.style.width = '100%';
 
     var payload = buildPayload({ complete: true, exitedEarly: false });
+
+    // ============================================
+    // DROP TRACKER: completeSession + lead_submitted event
+    // Fire-and-forget — paralelno sa Make webhook-om
+    // ============================================
+    var contact = payload.contact || {};
+    var winner = payload.outcome || {};
+    apiCompleteSession({
+      first_name: contact.first_name || null,
+      last_name: contact.last_name || null,
+      name: contact.name || null,
+      email: contact.email || null,
+      phone: contact.phone || null,
+      phone_country: contact.phone_country || null,
+      instagram: contact.instagram || null,
+      outcome: winner.id || null,
+      outcome_scores: payload.scores || {},
+      lead_quality: payload.lead_quality || null,
+      lead_quality_reason: payload.lead_quality_reason || null,
+      answers: payload.answers || {}
+    });
+    apiLogEvent('lead_submitted', 19, 'lead_submitted', {
+      outcome: winner.id || null,
+      lead_quality: payload.lead_quality || null
+    });
 
     return sendFetch(ND_CONFIG.webhookUrl, payload, ND_CONFIG.submitTimeoutMs)
       .catch(function(err) {
