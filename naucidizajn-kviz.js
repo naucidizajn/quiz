@@ -517,6 +517,7 @@
         title: 'Unesi svoj Instagram username (nije obavezno)',
         description: 'Ako odlučiš da uneseš svoj Instagram, naš tim će ti poslati poruku da vidimo da li dizajn karijera ima smisla za tebe i kako mi možemo da ti pomognemo da kreneš sa novom veštinom. ☺️\nSvakako, ovo *nije obavezno* i možeš samo da nastaviš i dobiješ rezultat ✌🏻',
         required: false,
+        canSkip: true,
         placeholder: 'Type your answer here...'
       },
 
@@ -526,6 +527,7 @@
         title: 'Unesi svoj broj telefona (nije obavezno)',
         description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da odlučiš da li je dizajn karijera za tebe i koji smer ima smisla. ',
         required: false,
+        canSkip: true,
         placeholder: '060 1234567'
       },
 
@@ -912,7 +914,7 @@
     if (field.type === 'choice') {
       inner = renderQuestionHeader(field) +
               '<div class="nd-choices">' + field.choices.map(renderChoice).join('') + '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>';
+              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">Dalje</span></button></div>';
     }
     else if (field.type === 'scale') {
       var btns = '';
@@ -921,16 +923,28 @@
       }
       inner = renderQuestionHeader(field) +
               '<div class="nd-scale">' + btns + '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>';
+              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">Dalje</span></button></div>';
     }
     else if (field.type === 'text') {
+      var skipBtnText = field.canSkip
+        ? '<button type="button" class="nd-btn-skip" data-skip style="margin-left:auto;background:transparent;color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.18);padding:10px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;">Preskoči</button>'
+        : '';
+      var actionsAttrText = field.canSkip
+        ? ' style="display:flex;align-items:center;gap:12px;"'
+        : '';
       inner = renderQuestionHeader(field) +
               '<div class="nd-input-wrap">' +
                 '<input type="text" class="nd-input" placeholder="' + escapeHtml(field.placeholder || '') + '" autocomplete="off">' +
               '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary"><span class="nd-btn-label">OK</span></button></div>';
+              '<div class="nd-actions"' + actionsAttrText + '><button type="button" class="nd-btn-primary"><span class="nd-btn-label">Dalje</span></button>' + skipBtnText + '</div>';
     }
     else if (field.type === 'phone') {
+      var skipBtnPhone = field.canSkip
+        ? '<button type="button" class="nd-btn-skip" data-skip style="margin-left:auto;background:transparent;color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.18);padding:10px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;">Preskoči</button>'
+        : '';
+      var actionsAttrPhone = field.canSkip
+        ? ' style="display:flex;align-items:center;gap:12px;"'
+        : '';
       inner = renderQuestionHeader(field) +
               '<div class="nd-phone-row">' +
                 '<button type="button" class="nd-country-trigger" aria-expanded="false" aria-haspopup="listbox">' +
@@ -948,7 +962,7 @@
                   '<div class="nd-country-list" role="listbox"></div>' +
                 '</div>' +
               '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary"><span class="nd-btn-label">OK</span></button></div>';
+              '<div class="nd-actions"' + actionsAttrPhone + '><button type="button" class="nd-btn-primary"><span class="nd-btn-label">Dalje</span></button>' + skipBtnPhone + '</div>';
     }
     else if (field.type === 'contact') {
       inner = renderQuestionHeader(field) +
@@ -966,7 +980,7 @@
                   '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email" placeholder="name@example.com"></div>' +
                 '</div>' +
               '</div>' +
-              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">OK</span></button></div>' +
+              '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">Dalje</span></button></div>' +
               '<div class="nd-error" hidden></div>';
     }
 
@@ -990,6 +1004,7 @@
 
     var inner =
       '<div class="nd-welcome">' +
+        '<img src="https://naucidizajn.github.io/quiz/images/welcome-image.png" alt="Nau\u010Di Dizajn" style="display:block;max-width:480px;width:100%;height:auto;margin:0 auto 24px;">' +
         '<h1 class="nd-welcome-title">' + escapeHtml(FORM.welcome.title) + '</h1>' +
         paragraphsHtml +
         '<div class="nd-actions"><button type="button" class="nd-btn-primary" data-welcome-start><span class="nd-btn-label">' + escapeHtml(FORM.welcome.buttonText) + '</span></button></div>' +
@@ -1105,11 +1120,18 @@
     else if (field.type === 'text') {
       var tin = el.querySelector('.nd-input');
       var tok = el.querySelector('.nd-btn-primary');
+      var tskip = el.querySelector('[data-skip]');
       tok.addEventListener('click', function() {
         var v = (tin.value || '').trim();
         state.answers[field.key] = v; // može biti prazno (opciono)
         advance(field.key);
       });
+      if (tskip) {
+        tskip.addEventListener('click', function() {
+          state.answers[field.key] = '';
+          advance(field.key);
+        });
+      }
       tin.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') { e.preventDefault(); tok.click(); }
       });
@@ -1235,6 +1257,15 @@
         state.answers[field.key + '_country'] = selectedCountry ? selectedCountry.c : '';
         advance(field.key);
       });
+      // Preskoči
+      var pskip = el.querySelector('[data-skip]');
+      if (pskip) {
+        pskip.addEventListener('click', function() {
+          state.answers[field.key] = '';
+          state.answers[field.key + '_country'] = '';
+          advance(field.key);
+        });
+      }
       pin.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') { e.preventDefault(); pok.click(); }
       });
@@ -1277,7 +1308,7 @@
         // Ako korisnik menja polja nakon prvog klika OK → resetuj na "OK"
         if (submitStage === 'submit') {
           submitStage = 'ok';
-          ok2Lbl.textContent = 'OK';
+          ok2Lbl.textContent = 'Dalje';
         }
       }
       firstIn.addEventListener('input', refresh);
