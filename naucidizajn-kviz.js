@@ -588,6 +588,7 @@
   }
 
   // POST /api/sessions — kreira sesiju, vraća UUID
+  // Posle uspeha flush-uje pending event queue
   function apiCreateSession() {
     var payload = {
       utm_source:   utmData.utm_source   || null,
@@ -611,26 +612,33 @@
       if (data && data.success && data.data && data.data.session_id) {
         state.serverSessionId = data.data.session_id;
         apiLog('Session created:', state.serverSessionId);
+        // Flush pending events (uglavnom Q1 step_viewed koji je nastao pre createSession-a)
+        while (apiEventQueue.length > 0) {
+          apiSendEvent(apiEventQueue.shift());
+        }
       } else {
         apiErr('createSession bad response:', data);
+        apiEventQueue.length = 0; // odbaci queued events
       }
     })
     .catch(function(err) {
       apiErr('createSession failed', err);
+      apiEventQueue.length = 0;
     });
   }
 
-  // POST /api/events — fire-and-forget
-  function apiLogEvent(eventType, stepNumber, stepName, metadata) {
-    if (!state.serverSessionId) return; // bez sesije ne logujemo
-    var timeOnStep = Date.now() - state.lastStepEnteredAt;
+  // Queue za event-e koji nastaju pre nego što createSession završi
+  var apiEventQueue = [];
+
+  // Interna funkcija za slanje event-a (zahteva da serverSessionId postoji)
+  function apiSendEvent(event) {
     var body = {
       session_id: state.serverSessionId,
-      event_type: eventType,
-      step_number: stepNumber || null,
-      step_name: stepName || null,
-      time_on_step: timeOnStep,
-      metadata: metadata || {}
+      event_type: event.event_type,
+      step_number: event.step_number,
+      step_name: event.step_name,
+      time_on_step: event.time_on_step,
+      metadata: event.metadata
     };
     try {
       fetch(QUIZ_API_URL + '/api/events', {
@@ -641,6 +649,23 @@
       }).catch(function(err) { apiErr('logEvent failed', err); });
     } catch (err) {
       apiErr('logEvent exception', err);
+    }
+  }
+
+  // POST /api/events — fire-and-forget sa queue fallback-om
+  function apiLogEvent(eventType, stepNumber, stepName, metadata) {
+    var event = {
+      event_type: eventType,
+      step_number: stepNumber || null,
+      step_name: stepName || null,
+      time_on_step: Date.now() - state.lastStepEnteredAt,
+      metadata: metadata || {}
+    };
+    if (state.serverSessionId) {
+      apiSendEvent(event);
+    } else {
+      // Queue dok sessionId ne stigne (uglavnom Q1 step_viewed)
+      apiEventQueue.push(event);
     }
   }
 
