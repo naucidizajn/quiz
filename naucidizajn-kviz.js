@@ -1118,16 +1118,12 @@
       inner = renderQuestionHeader(field) +
               '<div class="nd-contact-grid">' +
                 '<div class="nd-contact-field">' +
-                  '<label class="nd-input-label">First name<span class="nd-required">*</span></label>' +
-                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-firstname autocomplete="given-name" placeholder="Jane"></div>' +
-                '</div>' +
-                '<div class="nd-contact-field">' +
-                  '<label class="nd-input-label">Last name<span class="nd-required">*</span></label>' +
-                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-lastname autocomplete="family-name" placeholder="Smith"></div>' +
+                  '<label class="nd-input-label">Ime<span class="nd-required">*</span></label>' +
+                  '<div class="nd-input-wrap"><input type="text" class="nd-input" data-firstname autocomplete="given-name" placeholder="Petar"></div>' +
                 '</div>' +
                 '<div class="nd-contact-field">' +
                   '<label class="nd-input-label">Email<span class="nd-required">*</span></label>' +
-                  '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email" placeholder="name@example.com"></div>' +
+                  '<div class="nd-input-wrap"><input type="email" class="nd-input" data-email autocomplete="email" inputmode="email" placeholder="email@gmail.com"></div>' +
                 '</div>' +
               '</div>' +
               '<div class="nd-actions"><button type="button" class="nd-btn-primary" disabled><span class="nd-btn-label">Dalje</span></button></div>' +
@@ -1436,7 +1432,6 @@
     }
     else if (field.type === 'contact') {
       var firstIn = el.querySelector('input[data-firstname]');
-      var lastIn  = el.querySelector('input[data-lastname]');
       var emailIn = el.querySelector('input[data-email]');
       var ok2     = el.querySelector('.nd-btn-primary');
       var ok2Lbl  = ok2.querySelector('.nd-btn-label');
@@ -1451,9 +1446,8 @@
 
       function valid() {
         var fn = (firstIn.value || '').trim();
-        var ln = (lastIn.value || '').trim();
         var em = (emailIn.value || '').trim();
-        return fn.length >= 1 && ln.length >= 1 && isValidEmail(em);
+        return fn.length >= 1 && isValidEmail(em);
       }
       function refresh() {
         ok2.disabled = !valid();
@@ -1464,7 +1458,6 @@
         }
       }
       firstIn.addEventListener('input', refresh);
-      lastIn.addEventListener('input', refresh);
       emailIn.addEventListener('input', refresh);
 
       ok2.addEventListener('click', function() {
@@ -1481,10 +1474,11 @@
 
         // Drugi klik (submit): šalji formu. Email uzimamo iz email input-a.
         var emailVal = emailIn.value.trim();
+        var firstNameVal = firstIn.value.trim();
         state.answers[field.key] = {
-          firstName: firstIn.value.trim(),
-          lastName: lastIn.value.trim(),
-          name: firstIn.value.trim() + ' ' + lastIn.value.trim(),
+          firstName: firstNameVal,
+          lastName: '',
+          name: firstNameVal,
           email: emailVal
         };
         ok2.disabled = true;
@@ -1497,7 +1491,7 @@
         });
       });
       // Ctrl+Enter on any field = submit (Typeform-style)
-      [firstIn, lastIn, emailIn].forEach(function(input) {
+      [firstIn, emailIn].forEach(function(input) {
         input.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && valid()) {
             e.preventDefault();
