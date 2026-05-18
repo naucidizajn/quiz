@@ -706,6 +706,6 @@
   @media (max-width: 640px) {
     #nd-quiz .nd-step[data-key="__welcome"] {
       align-items: flex-start;
-      padding-top: 230px;
+      padding-top: 50px;
     }
   }
