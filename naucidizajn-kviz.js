@@ -1242,6 +1242,7 @@
       var sbtns = Array.from(el.querySelectorAll('.nd-scale-btn'));
       var sok   = el.querySelector('.nd-btn-primary');
       var sval  = null;
+      var advanceTimer = null;
 
       sbtns.forEach(function(b) {
         b.addEventListener('click', function() {
@@ -1249,9 +1250,11 @@
           b.classList.add('nd-selected');
           sval = parseInt(b.dataset.val, 10);
           sok.removeAttribute('disabled');
-          // Auto-advance posle 280ms (kao u choice buttons)
-          setTimeout(function() {
-            if (state.answers[field.key] != null) return; // već je submited
+
+          // Cancel pending auto-advance (npr. kad korisnik brzo klikne više brojeva)
+          // i pokreni novi. Bez state.answers provere — to bi blokiralo back navigaciju.
+          if (advanceTimer) clearTimeout(advanceTimer);
+          advanceTimer = setTimeout(function() {
             state.answers[field.key] = sval;
             advance(field.key);
           }, 280);
@@ -1260,7 +1263,7 @@
 
       sok.addEventListener('click', function() {
         if (sval == null) return;
-        if (state.answers[field.key] != null) return;
+        if (advanceTimer) clearTimeout(advanceTimer);
         state.answers[field.key] = sval;
         advance(field.key);
       });
