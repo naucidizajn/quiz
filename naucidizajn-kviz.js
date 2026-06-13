@@ -1,4 +1,4 @@
-/* Verzija: v1.27 */
+/* Verzija: v1.28 */
 
 (function() {
   'use strict';
@@ -429,9 +429,20 @@
         ]
       },
 
-      // ---- Q8-Q15 Lead kvalifikacija ----
+      // ---- Q8 Laptop/kompjuter (samo DA putanja, ne boduje outcome ni lead quality) ----
       {
-        key: 'q8_situacija', num: 8, type: 'choice',
+        key: 'q8_laptop', num: 8, type: 'choice',
+        title: 'Da li imaš laptop/kompjuter?',
+        required: true,
+        choices: [
+          { label: 'Da' },
+          { label: 'Ne' }
+        ]
+      },
+
+      // ---- Q9-Q16 Lead kvalifikacija ----
+      {
+        key: 'q8_situacija', num: 9, type: 'choice',
         title: 'Koja je tvoja trenutna situacija?',
         required: true,
         choices: [
@@ -442,7 +453,7 @@
         ]
       },
       {
-        key: 'q9_vreme_dnevno', num: 9, type: 'choice',
+        key: 'q9_vreme_dnevno', num: 10, type: 'choice',
         title: 'Koliko vremena dnevno imaš za učenje nove veštine?',
         required: true,
         choices: [
@@ -453,7 +464,7 @@
         ]
       },
       {
-        key: 'q10_kada_zarada', num: 10, type: 'choice',
+        key: 'q10_kada_zarada', num: 11, type: 'choice',
         title: 'Kada bi da zarađuješ od IT veštine / dizajna?',
         required: true,
         choices: [
@@ -464,7 +475,7 @@
         ]
       },
       {
-        key: 'q11_zarada_cilj', num: 11, type: 'choice',
+        key: 'q11_zarada_cilj', num: 12, type: 'choice',
         title: 'Koja mesečna zarada bi za tebe bila pobeda?',
         required: true,
         choices: [
@@ -475,13 +486,13 @@
         ]
       },
       {
-        key: 'q12_motivacija', num: 12, type: 'scale',
+        key: 'q12_motivacija', num: 13, type: 'scale',
         title: 'Koliko ti je bitno da promeniš karijeru u narednih 12 meseci?',
         required: true,
         scale: { min: 0, max: 10 }
       },
       {
-        key: 'q13_budzet', num: 13, type: 'choice',
+        key: 'q13_budzet', num: 14, type: 'choice',
         title: 'Ako postoji program koji može da te dovede do cilja, šta te najbolje opisuje?',
         required: true,
         choices: [
@@ -492,7 +503,7 @@
         ]
       },
       {
-        key: 'q14_vec_kod_nas', num: 14, type: 'choice',
+        key: 'q14_vec_kod_nas', num: 15, type: 'choice',
         title: 'Da li si već kod nas na edukaciji?',
         required: true,
         choices: [
@@ -501,7 +512,7 @@
         ]
       },
       {
-        key: 'q15_60_dana', num: 15, type: 'choice',
+        key: 'q15_60_dana', num: 16, type: 'choice',
         title: 'Da li želiš da kreneš sa edukacijom u narednih 60 dana?',
         required: true,
         choices: [
@@ -513,7 +524,7 @@
 
       // ---- Q16 Instagram (uslovno) ----
       {
-        key: 'q16_instagram', num: 16, type: 'text',
+        key: 'q16_instagram', num: 17, type: 'text',
         title: 'Unesi svoj Instagram username (nije obavezno)',
         description: 'Ako odlučiš da uneseš svoj Instagram, naš tim će ti poslati poruku da vidimo da li dizajn karijera ima smisla za tebe i kako mi možemo da ti pomognemo da kreneš sa novom veštinom. ☺️\nSvakako, ovo *nije obavezno* i možeš samo da nastaviš i dobiješ rezultat ✌🏻',
         required: false,
@@ -523,7 +534,7 @@
 
       // ---- Q17 Telefon (uslovno) ----
       {
-        key: 'q17_phone', num: 17, type: 'phone',
+        key: 'q17_phone', num: 18, type: 'phone',
         title: 'Unesi svoj broj telefona (nije obavezno)',
         description: 'Ako ostaviš broj, naš tim će ti pisati na WhatsApp / Viber da ti pomognemo da odlučiš da li je dizajn karijera za tebe i koji smer ima smisla. ',
         required: false,
@@ -533,7 +544,7 @@
 
       // ---- Q18 Podaci (email/ime) ----
       {
-        key: 'q18_kontakt', num: 18, type: 'contact',
+        key: 'q18_kontakt', num: 19, type: 'contact',
         title: 'Podaci',
         description: 'Na email će ti stići rezultat kviza, kao i dodatne lekcije koje će ti pomoći da kreneš sa učenjem idealne veštine za tebe',
         required: true
@@ -694,18 +705,19 @@
     'q5_stan': 5,
     'q6_zabavno': 6,
     'q7_continue': 7,
-    'q8_situacija': 8,
-    'q9_vreme_dnevno': 9,
-    'q10_kada_zarada': 10,
-    'q11_zarada_cilj': 11,
-    'q12_motivacija': 12,
-    'q13_budzet': 13,
-    'q14_vec_kod_nas': 14,
-    'q15_60_dana': 15,
-    'q16_instagram': 16,
-    'q17_phone': 17,
-    'q18_kontakt': 18,
-    'lead_submitted': 19
+    'q8_laptop': 8,
+    'q8_situacija': 9,
+    'q9_vreme_dnevno': 10,
+    'q10_kada_zarada': 11,
+    'q11_zarada_cilj': 12,
+    'q12_motivacija': 13,
+    'q13_budzet': 14,
+    'q14_vec_kod_nas': 15,
+    'q15_60_dana': 16,
+    'q16_instagram': 17,
+    'q17_phone': 18,
+    'q18_kontakt': 19,
+    'lead_submitted': 20
   };
 
 
@@ -864,30 +876,30 @@
   // Predviđa ukupan broj koraka na osnovu trenutnih odgovora.
   // Logika: koristi NAJKRAĆU moguću putanju dok ne stignemo do branching point-a.
   // Pre Q7 odgovora: pretpostavlja 'NE, pokaži rezultat' = 8 koraka (kratka putanja)
-  // Posle Q7 'NE': ostaje 8 koraka
-  // Posle Q7 'DA': pretpostavlja Q14 = 'Da, jesam' = 15 koraka (sledeća kratka putanja)
-  // Posle Q14 'Da, jesam': ostaje 15
-  // Posle Q14 'Nisam': 17 koraka (Q15 + Q16/Q17 + Q18)
+  // Posle Q7 'NE': ostaje 8 koraka (laptop pitanje se preskače)
+  // Posle Q7 'DA': pretpostavlja Q14 = 'Da, jesam' = 16 koraka (sledeća kratka putanja)
+  // Posle Q14 'Da, jesam': ostaje 16
+  // Posle Q14 'Nisam': 18 koraka (Q15 + Q16/Q17 + Q18)
   function predictTotalSteps() {
     var a = state.answers;
 
     // Q7 odgovor poznat?
     if (a.q7_continue) {
       if (a.q7_continue.skipToEnd) {
-        // 'NE, pokaži rezultat' -> Q1...Q7 + Q18 = 8 koraka
+        // 'NE, pokaži rezultat' -> Q1...Q7 + Q18 = 8 koraka (laptop se preskače)
         return 8;
       }
       // 'DA, idemo dalje' - Q14 odgovor poznat?
       if (a.q14_vec_kod_nas) {
         if (a.q14_vec_kod_nas.skipToEnd) {
-          // 'Da, jesam' -> Q1...Q14 + Q18 = 15 koraka
-          return 15;
+          // 'Da, jesam' -> Q1...Q7 + laptop + Q8...Q14 + Q18 = 16 koraka
+          return 16;
         }
-        // 'Nisam' -> Q1...Q15 + (Q16 ili Q17) + Q18 = 17 koraka
-        return 17;
+        // 'Nisam' -> + Q15 + (Q16 ili Q17) + Q18 = 18 koraka
+        return 18;
       }
-      // Q7 'DA', Q14 nije odgovoreno: pretpostavi 'Da, jesam' (kraća putanja) = 15
-      return 15;
+      // Q7 'DA', Q14 nije odgovoreno: pretpostavi 'Da, jesam' (kraća putanja) = 16
+      return 16;
     }
 
     // Pre Q7: pretpostavi 'NE' (najkraća putanja) = 8 koraka
@@ -902,17 +914,17 @@
     // Linearne pozicije (Q1 = 1, Q2 = 2, ... Q14 = 14)
     var linearMap = {
       'q1_zadatak': 1, 'q2_vecera': 2, 'q3_nervira': 3, 'q4_ucenje': 4,
-      'q5_stan': 5, 'q6_zabavno': 6, 'q7_continue': 7, 'q8_situacija': 8,
-      'q9_vreme_dnevno': 9, 'q10_kada_zarada': 10, 'q11_zarada_cilj': 11,
-      'q12_motivacija': 12, 'q13_budzet': 13, 'q14_vec_kod_nas': 14
+      'q5_stan': 5, 'q6_zabavno': 6, 'q7_continue': 7, 'q8_laptop': 8,
+      'q8_situacija': 9, 'q9_vreme_dnevno': 10, 'q10_kada_zarada': 11,
+      'q11_zarada_cilj': 12, 'q12_motivacija': 13, 'q13_budzet': 14, 'q14_vec_kod_nas': 15
     };
     if (linearMap[key]) return linearMap[key];
 
-    // Q15 = pozicija 15
-    if (key === 'q15_60_dana') return 15;
+    // Q15 (60 dana) = pozicija 16
+    if (key === 'q15_60_dana') return 16;
 
-    // Q16 ili Q17 = pozicija 16
-    if (key === 'q16_instagram' || key === 'q17_phone') return 16;
+    // Q16 ili Q17 (Instagram/telefon) = pozicija 17
+    if (key === 'q16_instagram' || key === 'q17_phone') return 17;
 
     // Q18 = poslednja pozicija (zavisi od putanje)
     if (key === 'q18_kontakt') return predictTotalSteps();
@@ -988,7 +1000,7 @@
       return path;
     }
     // Q7 'DA' ili neodgovoreno → idemo dalje pretpostavkom DA
-    path = path.concat(['q8_situacija','q9_vreme_dnevno','q10_kada_zarada','q11_zarada_cilj','q12_motivacija','q13_budzet','q14_vec_kod_nas']);
+    path = path.concat(['q8_laptop','q8_situacija','q9_vreme_dnevno','q10_kada_zarada','q11_zarada_cilj','q12_motivacija','q13_budzet','q14_vec_kod_nas']);
 
     if (a.q14_vec_kod_nas && a.q14_vec_kod_nas.skipToEnd) {
       path.push('q18_kontakt');
@@ -1803,6 +1815,7 @@
     'q5_stan':          'Kada sređuješ stan bitno ti je:',
     'q6_zabavno':       'Šta bi ti bilo zabavnije da radiš?',
     'q7_continue':      'Da li želiš da nastaviš sa kvizom?',
+    'q8_laptop':        'Da li imaš laptop/kompjuter?',
     'q8_situacija':     'Koja je tvoja trenutna situacija?',
     'q9_vreme_dnevno':  'Koliko vremena dnevno možeš da posvetiš učenju?',
     'q10_kada_zarada':  'Kada bi da zarađuješ od IT veštine / dizajna?',
@@ -1915,7 +1928,7 @@
       lead_quality_reason: payload.lead_quality_reason || null,
       answers: payload.answers || {}
     });
-    apiLogEvent('lead_submitted', 19, 'lead_submitted', {
+    apiLogEvent('lead_submitted', 20, 'lead_submitted', {
       outcome: winner.id || null,
       lead_quality: payload.lead_quality || null
     });
